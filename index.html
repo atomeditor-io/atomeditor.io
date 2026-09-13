@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atom — atomeditor.io</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><circle cx="60" cy="60" r="12" fill="%2378b743"/><g fill="none" stroke="%2378b743" stroke-width="7"><ellipse cx="60" cy="60" rx="52" ry="20"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(60 60 60)"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(120 60 60)"/></g></svg>'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:#2b2f35;color:#efefef;-webkit-font-smoothing:antialiased}
+a{color:#7db5f5;text-decoration:none}
+nav{background:#212428;display:flex;align-items:center;gap:26px;padding:13px 28px;position:sticky;top:0;z-index:10}
+nav .brand{display:flex;align-items:center;gap:9px;color:#fff!important;font-size:16px}
+nav .spacer{flex:1}
+nav a.nl{color:#a7adb5;font-size:14px}
+nav a.nl:hover{color:#fff}
+.hero{background:#33373d;text-align:center;padding:64px 20px 0;position:relative;overflow:hidden}
+.hero .logo{width:120px;height:120px;margin:0 auto 18px}
+.hero h1{font-size:44px;font-weight:300;letter-spacing:.5px}
+.hero h1 b{font-weight:500}
+.hero p.sub{color:#a7adb5;font-size:19px;font-weight:300;margin:12px 0 26px}
+.dl-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+a.dl{background:#78b743;color:#fff!important;font-size:17px;border-radius:4px;padding:13px 34px;display:inline-block}
+a.dl small{display:block;font-size:12px;font-weight:400;opacity:.9;margin-top:2px}
+a.gh{background:transparent;border:1px solid #6b7178;color:#e6e8eb!important;font-size:17px;border-radius:4px;padding:13px 30px;display:inline-block}
+.hero .rev{font-size:13px;color:#8b9199;margin:14px 0 0}
+.hero .rev b{color:#c8cdd2}
+.shot{background:#212428;text-align:center}
+.shot .frame{max-width:960px;margin:0 auto}
+.shot img{width:100%;display:block;border-radius:6px 6px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.5)}
+.stats{background:#212428;border-top:1px solid #343a43;display:flex;justify-content:center;gap:48px;flex-wrap:wrap;padding:22px 20px;text-align:center}
+.stats b{display:block;font-size:24px;font-weight:400}
+.stats span{font-size:13px;color:#8b9199}
+.rows{background:#efefef;color:#33373d;padding:60px 20px}
+.rows h2,.features h2,.blog h2{text-align:center;font-weight:300;font-size:30px;margin-bottom:8px}
+.rows p.lead,.features p.lead,.blog p.lead{text-align:center;color:#6b7178;max-width:640px;margin:0 auto 40px}
+.row{max-width:960px;margin:0 auto 48px;display:flex;gap:40px;align-items:center;flex-wrap:wrap}
+.row:last-child{margin-bottom:0}
+.row .txt{flex:1;min-width:260px}
+.row .txt h3{font-size:21px;font-weight:400;margin-bottom:8px}
+.row .txt p{color:#5c6166;font-size:15px}
+.row .vis{flex:1;min-width:260px}
+.term{background:#1e2126;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:Menlo,Consolas,monospace;font-size:13.5px}
+.term .bar{background:#343a43;color:#a7adb5;padding:7px 12px;font-size:12px}
+.term .body{padding:14px 16px;color:#d7dae0;line-height:1.7}
+.term .g{color:#78b743}.term .c{color:#8b9199}.term .y{color:#e5c07b}
+.code{background:#282c34;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:Menlo,Consolas,monospace;font-size:13px}
+.code .body{padding:14px 16px;line-height:1.75;color:#abb2bf}
+.k{color:#c678dd}.f{color:#61afef}.s{color:#98c379}.n{color:#d19a66}.m{color:#8b9199}
+.panes{background:#1e2126;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25);display:flex;font-size:12px}
+.panes .p{flex:1;border-right:1px solid #343a43;min-height:150px}
+.panes .p:last-child{border:0}
+.panes .t{background:#343a43;color:#a7adb5;padding:6px 10px;font-family:Menlo,Consolas,monospace}
+.panes .b{padding:10px 12px;font-family:Menlo,Consolas,monospace;line-height:1.8;color:#abb2bf}
+.ai{background:#1e2126;padding:60px 20px;text-align:center;border-top:4px solid #78b743}
+.ai h2{font-weight:300;font-size:30px;margin-bottom:10px}
+.ai h2 b{color:#78b743;font-weight:500}
+.ai p{color:#a7adb5;max-width:620px;margin:0 auto 24px}
+.features{background:#efefef;color:#33373d;padding:56px 20px;text-align:center}
+.grid{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:28px;text-align:left}
+.grid h3{font-size:17px;margin-bottom:6px}
+.grid p{font-size:14px;color:#5c6166}
+.blog{background:#2b2f35;padding:52px 20px;text-align:center}
+.blog .cards{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;text-align:left}
+.blog .card{background:#33373d;border:1px solid #43484f;border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.blog .card h3{margin:0;font-size:17px;font-weight:500}
+.blog .card h3 a{color:#fff}
+.blog .card .date{font-size:12px;color:#8b9199}
+.blog .card p{font-size:13.5px;color:#b9bec6;margin:0;flex:1}
+.blog .card a.more{font-size:13px}
+.ladder{background:#2b2f35;padding:52px 20px;text-align:center}
+.ladder h2{font-weight:300;font-size:28px;margin-bottom:6px}
+.ladder p{color:#a7adb5;margin-bottom:22px}
+table{margin:0 auto;border-collapse:collapse;font-size:14px;min-width:min(560px,92vw)}
+td,th{border-bottom:1px solid #43484f;padding:9px 14px;text-align:left}
+th{color:#8b9199;font-weight:500}
+footer{background:#212428;color:#8b9199;font-size:13px;padding:34px 20px;text-align:center}
+footer .cols{max-width:960px;margin:0 auto 22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;text-align:left}
+footer h4{color:#c8cdd2;font-size:13px;margin-bottom:8px;font-weight:500}
+footer a{display:block;color:#8b9199;margin:4px 0}
+footer a:hover{color:#fff}
+code{background:rgba(255,255,255,.08);padding:.1em .4em;border-radius:4px;font-size:.92em}
+.features code,.rows code{background:rgba(0,0,0,.07)}
+</style>
+<nav><a class="brand" href="#"><svg width="26" height="26" viewBox="0 0 120 120"><circle cx="60" cy="60" r="12" fill="#78b743"/><g fill="none" stroke="#78b743" stroke-width="7"><ellipse cx="60" cy="60" rx="52" ry="20"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(60 60 60)"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(120 60 60)"/></g></svg>atom <span style="color:#8b9199;font-size:13px">atomeditor.io</span></a><span class="spacer"></span><a class="nl" href="https://github.com/atomeditor-io/atom/releases">Releases</a><a class="nl" href="https://github.com/atomeditor-io/atom-ai">atom-ai</a><a class="nl" href="https://github.com/atomeditor-io/atom/issues/1">Chase log</a><a class="nl" href="blog/index.html">Blog</a><a class="nl" href="https://github.com/atomeditor-io/atom/blob/electron-upgrade-e36/docs/building-debian13.md">Building</a></nav>
+<div class="hero">
+<svg class="logo" viewBox="0 0 120 120"><circle cx="60" cy="60" r="10" fill="#78b743"/><g fill="none" stroke="#78b743" stroke-width="5"><ellipse cx="60" cy="60" rx="52" ry="20"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(60 60 60)"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(120 60 60)"/></g><circle cx="108" cy="60" r="6" fill="#5da332"/><circle cx="36" cy="101" r="6" fill="#5da332"/><circle cx="36" cy="19" r="6" fill="#5da332"/></svg>
+<h1>A hackable <b>text editor</b> for the 21st Century</h1>
+<p class="sub">Revived by <b>atomeditor.io</b> — Atom 1.63.1 climbing modern Electron, rung by rung.</p>
+<div class="dl-row"><a class="dl" id="dlbtn" href="https://github.com/atomeditor-io/atom/releases">Download<span style="display:block;font-size:12px" id="dlver">latest release</span></a><a class="gh" href="https://github.com/atomeditor-io/atom">View on GitHub</a></div>
+<p class="rev">Now shipping: <b id="rung">Atom 1.63.1 on modern Electron</b> · <a href="https://github.com/atomeditor-io/atom/issues/1">chase log</a></p>
+<br>
+</div>
+<div class="shot"><div class="frame"><img src="https://user-images.githubusercontent.com/378023/49132478-f4b77680-f31f-11e8-9e10-e8454d8d9b7e.png" alt="Atom screenshot"></div></div>
+<div class="stats"><div><b id="st-rungs">24</b><span>Electron rungs</span></div><div><b id="st-rel">30+</b><span>releases shipped</span></div><div><b>300+</b><span>org repos mirrored</span></div><div><b id="st-date">—</b><span>latest release</span></div></div>
+<div class="rows">
+<h2>Built for the way you work</h2>
+<p class="lead">Everything the original was loved for — plus the two things it always missed.</p>
+<div class="row"><div class="txt"><h3>Built-in package manager</h3><p>‹packages pulled from repos on gh›. The old atom.io registry is dead, so <code>apm</code> now talks to a static, GitHub-backed registry hosted right here on atomeditor.io — every install resolves straight to the source repository.</p></div><div class="vis"><div class="term"><div class="bar">terminal</div><div class="body"><span class="c">$</span> apm install minimap<br><span class="g">✓</span> Installing minimap ✓<br><span class="c">$</span> apm install owner/<span class="y">my-theme</span><br><span class="g">✓</span> Installing my-theme ✓</div></div></div></div>
+<div class="row"><div class="vis"><div class="code"><div class="body"><span class="m">// smart autocompletion, tree-sitter highlighting</span><br><span class="k">function</span> <span class="f">revive</span>(editor) {<br>&nbsp;&nbsp;<span class="k">return</span> editor.<span class="f">open</span>(<span class="s">"future.js"</span>);<br>}</div></div></div><div class="txt"><h3>Smart autocompletion &amp; highlighting</h3><p>Tree-sitter grammars and fuzzy-native completion keep up as you type — exercised on real files in every rung's smoke tests.</p></div></div>
+<div class="row"><div class="txt"><h3>Multiple panes, file browser, find &amp; replace</h3><p>Split any direction, browse the tree, project-wide search — the classic Atom workflow, untouched, running on modern Chromium.</p></div><div class="vis"><div class="panes"><div class="p"><div class="t">future.js</div><div class="b"><span style="color:#c678dd">const</span> x = <span style="color:#d19a66">42</span>;</div></div><div class="p"><div class="t">notes.md</div><div class="b" style="color:#9aa3ad"># rung 25<br>ship it</div></div></div></div></div>
+</div>
+<div class="ai">
+<h2>Teletype is gone. <b>atom-ai</b> is here.</h2>
+<p>The original let you code together in real time. The revival pairs you with an AI agent instead: <a href="https://github.com/atomeditor-io/atom-ai">atom-ai</a> docks a panel in Atom and bridges CLI coding agents — opencode, aider, claude — with file and selection context. No API keys, no cloud account.</p>
+<div class="dl-row"><a class="gh" href="https://github.com/atomeditor-io/atom-ai">Get atom-ai</a></div>
+</div>
+<div class="features">
+<h2>Cross-platform, packaged for yours</h2>
+<p class="lead">Every rung ships CI-built binaries. Unsigned for now — right-click → Open on first launch.</p>
+<div class="grid">
+<div><h3>Debian / Ubuntu</h3><p><code>atom-amd64.deb</code> — install with dpkg, runs on modern Debian.</p></div>
+<div><h3>Fedora / RHEL</h3><p><code>atom.x86_64.rpm</code> — same build, rpm-packaged on CI.</p></div>
+<div><h3>macOS</h3><p><code>atom-mac.zip</code> — x64 build, via CI.</p></div>
+<div><h3>Windows</h3><p>Squirrel <code>Setup.exe</code> — via CI.</p></div>
+</div>
+</div>
+<div class="blog">
+<h2>From the blog</h2>
+<p class="lead">The revival story, the registry, and what's next.</p>
+<div class="cards">
+<div class="card"><h3><a href="blog/posts/part-1-the-revival.html">Part 1 — The revival</a></h3><span class="date">2026-09-13</span><p>Why we're keeping Atom alive on modern Electron, rung by rung — and where the chase ladder stands today.</p><a class="more" href="blog/posts/part-1-the-revival.html">Read →</a></div>
+<div class="card"><h3><a href="blog/posts/part-3-the-ecosystem-registry.html">Part 3 — The ecosystem registry</a></h3><span class="date">2026-09-13</span><p>The atom.io API is gone. Here's the static, GitHub-backed registry that keeps <code>apm install</code> working.</p><a class="more" href="blog/posts/part-3-the-ecosystem-registry.html">Read →</a></div>
+<div class="card"><h3><a href="blog/posts/part-4-ui-and-features.html">Part 4 — UI &amp; feature refresh</a></h3><span class="date">2026-09-13</span><p>Debug priorities, selective package updates, and the plan for a modern UI pass that keeps Atom's soul.</p><a class="more" href="blog/posts/part-4-ui-and-features.html">Read →</a></div>
+</div>
+</div>
+<div class="ladder">
+<h2>The chase ladder</h2>
+<p>Debian baseline plus every Electron rung, all CI-built. Full per-rung reports in <a href="https://github.com/atomeditor-io/atom/issues/1">issue #1</a>.</p>
+<table><tr><th>Base</th><th>Rungs</th><th>Status</th></tr><tr><td>v1.63.1-debian13.1</td><td>Electron 11</td><td>baseline, green</td></tr><tr><td>e13.1 → e37.x</td><td>Electron 13 → 37</td><td id="ladder-live">all green, released</td></tr></table>
+</div>
+<footer><div class="cols"><div><h4>Download</h4><a href="https://github.com/atomeditor-io/atom/releases">Releases</a><a href="https://github.com/atomeditor-io/atom/releases/latest">Latest</a></div><div><h4>Project</h4><a href="https://github.com/atomeditor-io/atom">Source</a><a href="https://github.com/atomeditor-io/atom/issues/1">Chase log</a><a href="https://github.com/atomeditor-io/atom-ai">atom-ai</a></div><div><h4>Develop</h4><a href="https://github.com/atomeditor-io/atom/blob/electron-upgrade-e36/docs/building-debian13.md">Building</a><a href="https://github.com/atomeditor-io">atomeditor-io org</a></div></div>Fork of <a style="display:inline" href="https://github.com/atom/atom">atom/atom</a> (MIT) · atom.io design homage · formerly <a style="display:inline" href="https://atom.io">atom.io</a></footer>
+<script>
+function detectOS(){
+  var ua=navigator.userAgent, plat=(navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||"";
+  function hit(p){return ua.indexOf(p)>-1||plat.indexOf(p)>-1;}
+  if(hit("Mac"))return{label:"macOS — zip",pick:function(a){return /\b(mac|darwin)\b|\.dmg$|\.pkg$/.test(a.name.toLowerCase());}};
+  if(hit("Win"))return{label:"Windows — Setup.exe",pick:function(a){return /\.exe$/.test(a.name.toLowerCase());}};
+  if(hit("Linux")||hit("X11")){
+    if(/fedora|rhel|centos|opensuse|suse|rocky|alma|amazon/i.test(ua))
+      return{label:"Fedora/RHEL — rpm",pick:function(a){return /\.rpm$/.test(a.name.toLowerCase());}};
+    return{label:"Debian/Ubuntu — deb",pick:function(a){return /\.deb$/.test(a.name.toLowerCase());}};
+  }
+  return{label:"latest release",pick:function(a){return /\.deb$/.test(a.name.toLowerCase());}};
+}
+var os=detectOS();
+fetch("https://api.github.com/repos/atomeditor-io/atom/releases/latest").then(r=>r.json()).then(d=>{
+if(!d.tag_name)return;
+var asset=(d.assets||[]).find(os.pick);
+document.getElementById("st-date").textContent=d.published_at.slice(0,10);
+var m=d.tag_name.match(/e(\d+)/);if(m)document.getElementById("rung").textContent="Atom 1.63.1 on Electron "+m[1];
+if(asset){
+  document.getElementById("dlver").textContent=d.tag_name+" · "+d.published_at.slice(0,10)+" · for "+os.label;
+  document.getElementById("dlbtn").href=asset.browser_download_url;
+}
+}).catch(()=>{});
+fetch("https://api.github.com/repos/atomeditor-io/atom/releases?per_page=100").then(r=>r.json()).then(d=>{
+if(Array.isArray(d)){document.getElementById("st-rel").textContent=d.length+"+";
+var es=new Set();d.forEach(x=>{var m=(x.tag_name||"").match(/e(\d+)\./);if(m)es.add(m[1])});if(es.size)document.getElementById("st-rungs").textContent=es.size;}
+}).catch(()=>{});
+</script>
