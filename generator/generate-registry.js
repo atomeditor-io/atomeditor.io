@@ -28,6 +28,8 @@ const EXTRA = (process.env.EXTRA_REPOS || [
   'TypeStrong/atom-typescript'
 ]).join(',');
 const EXTRA_REPOS = EXTRA.split(',').map(s => s.trim()).filter(Boolean);
+// Infra/meta repos that ship a package.json but are not installable packages.
+const NAME_DENY = /^(atom|atom-community\.github\.io|atom-editor|semantic-release[^/]*|dlvr[^/]*)$|\.github\.io$/i;
 const PER_PAGE = 100;
 const OUT_DIR = path.join(__dirname, '..', 'api');
 const TOKEN = process.env.GH_TOKEN || '';
@@ -121,6 +123,7 @@ async function buildPackage(meta) {
 
   const name = typeof pkg.name === 'string' && pkg.name ? pkg.name : meta.name;
   if (name.startsWith('@') || /\/|\\/.test(name)) return null;
+  if (NAME_DENY.test(name)) return null;
   const keywords = Array.isArray(pkg.keywords) ? pkg.keywords : [];
   const isTheme =
     keywords.some(k => /theme/i.test(k)) ||
@@ -131,6 +134,13 @@ async function buildPackage(meta) {
 
   const { version: tarballVersion, tarball } = await resolveTarball({ ...meta, version });
   const verKey = tarballVersion || version;
+  const engines = (pkg.engines && (pkg.engines.atom || pkg.engines['atom'])) ? { atom: pkg.engines.atom || pkg.engines['atom'] } : null;
+  const versionEntry = {
+    url: `https://github.com/${meta.org}/${meta.name}`,
+    tarball_url: tarball,
+    dist: { tarball },
+    ...(engines ? { engines } : {})
+  };
 
   return {
     name,
@@ -139,14 +149,25 @@ async function buildPackage(meta) {
     website: `https://github.com/${meta.org}/${meta.name}`,
     repository: { type: 'git', url: String(repositoryUrl).replace(/^git\+/, '') },
     stars: meta.stars,
+    downloads: 0,
+    stargazers_count: meta.stars,
+    readme: null,
+    metadata: {
+      name,
+      version: tarballVersion || version,
+      description: pkg.description || meta.description || '',
+      repository: { type: 'git', url: String(repositoryUrl).replace(/^git\+/, '') },
+      website: `https://github.com/${meta.org}/${meta.name}`,
+      ...(engines ? { engines } : {})
+    },
+    releases: {
+      latest: { version: tarballVersion || version, tarball_url: tarball, url: `${tarball || ''}` },
+      stable: { version: tarballVersion || version, tarball_url: tarball, url: `${tarball || ''}` }
+    },
     theme: isTheme,
     archived: meta.archived,
     versions: {
-      [verKey]: {
-        url: `https://github.com/${meta.org}/${meta.name}`,
-        tarball_url: tarball,
-        dist: { tarball }
-      }
+      [verKey]: versionEntry
     }
   };
 }
@@ -206,7 +227,9 @@ async function main() {
 
   for (const p of finalPkgs) {
     try {
-      writeJsonHtml(path.join(OUT_DIR, 'packages', `${p.name}.json`), p);
+      // apm requests /api/packages/<name> extensionless; Pages won't map <name>.json
+      // to it, so the canonical file is extensionless (a .json twin is a bonus).
+      writeJsonHtml(path.join(OUT_DIR, 'packages', p.name), p);
     } catch (e) {
       console.error(`skip write for ${p.name}: ${e.code}`);
     }
@@ -218,8 +241,9 @@ async function main() {
 
   writeJsonHtml(path.join(OUT_DIR, 'packages', 'index.html'), pkgIndex);
   writeJsonHtml(path.join(OUT_DIR, 'themes', 'index.html'), themeIndex);
-  writeJsonHtml(path.join(OUT_DIR, 'packages', 'featured.html'), pkgIndex.slice(0, 60));
-  writeJsonHtml(path.join(OUT_DIR, 'themes', 'featured.html'), themeIndex.slice(0, 30));
+  // featured needs FULL pack objects (apm renderer filters on pack.releases.latest)
+  writeJsonHtml(path.join(OUT_DIR, 'packages', 'featured'), finalPkgs.filter(p => !p.theme).slice(0, 60));
+  writeJsonHtml(path.join(OUT_DIR, 'themes', 'featured'), themeRecords.slice(0, 30));
 
   const meta = {
     source: ORGS.map(o => `https://github.com/${o}`),
