@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Part 1 — The revival · atomeditor.io</title>
+<link rel="stylesheet" href="../style.css">
+<nav><a class="brand" href="../../index.html"><svg width="26" height="26" viewBox="0 0 120 120"><circle cx="60" cy="60" r="12" fill="#78b743"/><g fill="none" stroke="#78b743" stroke-width="7"><ellipse cx="60" cy="60" rx="52" ry="20"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(60 60 60)"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(120 60 60)"/></g></svg>atom · blog</a><span class="spacer"></span><a class="nl" href="../index.html">All posts</a><a class="nl" href="https://github.com/atomeditor-io/atom/issues/1">Chase log</a></nav>
+<div class="wrap">
+<article>
+<h1>The revival — Atom 1.63.1 on modern Electron</h1>
+<p class="meta">2026-09-13 · Part 1 of the chase log</p>
+<p>GitHub archived Atom in 2022. The last release sat frozen on an Electron-era runtime that every modern OS had quietly left behind — newer systems rolled past its sign-up screens and its bundled Chromium. The editor was never dead; it was stuck.</p>
+<p>The revival takes the final upstream codebase, Atom 1.63.1, and climbs it up the Electron ladder, rung by rung.</p>
+<h2>The chase ladder</h2>
+<p>Each rung is a full jump to a newer Electron — the renderer, the native modules (<code>superstring</code>, <code>watcher</code>, <code>nsfw</code>, tree-sitter), and the packaged installers all have to move together. Every rung is CI-built on the three desktop platforms and gated by a real smoke test, not just a compile.</p>
+<ul>
+<li><b>Baselined</b> on a modern Debian at Electron 11.</li>
+<li><b>Climbed</b> Electronics 13 → 37 across the <a href="https://github.com/atomeditor-io/atom/issues/1">chase-log issue</a>, each jump its own tagged release.</li>
+<li><b>Now shipping</b> Atom 1.63.1 on Electron 37 — upstream Chromium, upstream Node, on the same editor.</li>
+</ul>
+<p>Along the way the original's two biggest missing pieces got addressed:</p>
+<ul>
+<li>The <b>dead atom.io package registry</b> is replaced by a static, GitHub-backed registry on this site — see <a href="part-3-the-ecosystem-registry.html">Part 3</a>.</li>
+<li><b>Teletype</b> (gone with the cloud) is succeeded by <a href="https://github.com/atomeditor-io/atom-ai">atom-ai</a>, which bridges in-editor panels with CLI coding agents.</li>
+</ul>
+<p>Downloads for Debian/Ubuntu, Fedora/RHEL, macOS and Windows land as CI artifacts under each release tag. Unsigned for now — right-click → Open on first launch.</p>
+</article>
+</div>
+<footer>Fork of <a href="https://github.com/atom/atom">atom/atom</a> (MIT) · <a href="https://atomeditor.io">atomeditor.io</a></footer>

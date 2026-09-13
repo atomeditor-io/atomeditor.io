@@ -1,0 +1,13 @@
+{
+  "name": "atomeditor-registry-generator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Generates the static, atom.io-compatible package registry for apm at /api/*",
+  "main": "generate-registry.js",
+  "scripts": {
+    "generate": "node generate-registry.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

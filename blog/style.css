@@ -1,0 +1,30 @@
+/* blog + posts */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:#2b2f35;color:#efefef;-webkit-font-smoothing:antialiased;line-height:1.6}
+a{color:#7db5f5;text-decoration:none}
+a:hover{color:#fff}
+nav{background:#212428;display:flex;align-items:center;gap:26px;padding:13px 28px;position:sticky;top:0;z-index:10}
+nav .brand{display:flex;align-items:center;gap:9px;color:#fff!important;font-size:16px}
+nav .spacer{flex:1}
+nav a.nl{color:#a7adb5;font-size:14px}
+nav a.nl:hover{color:#fff}
+.wrap{max-width:760px;margin:0 auto;padding:48px 22px}
+h1{font-weight:300;font-size:32px;margin-bottom:6px}
+p.lead{color:#a7adb5;margin-bottom:34px}
+.post{list-style:none;border-top:1px solid #43484f}
+.post li{padding:18px 0;border-bottom:1px solid #43484f}
+.post li .date{font-size:12px;color:#8b9199;display:block}
+.post li a.t{font-size:19px;color:#fff}
+.post li p{color:#a7adb5;font-size:14px}
+article h1{font-size:30px}
+article .meta{color:#8b9199;font-size:13px;margin-bottom:30px}
+article h2{font-size:22px;font-weight:400;margin:32px 0 10px;color:#fff}
+article h3{font-size:17px;font-weight:500;margin:24px 0 8px;color:#fff}
+article p,article li{color:#c2c8cf}
+article ul,article ol{padding-left:22px;margin:10px 0}
+article li{margin:4px 0}
+article code{background:rgba(255,255,255,.08);padding:.1em .4em;border-radius:4px;font-size:.92em}
+article pre{background:#1e2126;border-radius:8px;padding:14px 16px;overflow-x:auto;font-size:13px;margin:12px 0}
+article pre code{background:none;padding:0}
+blockquote{border-left:3px solid #78b743;color:#a7adb5;padding-left:14px;margin:14px 0}
+footer{background:#212428;color:#8b9199;font-size:13px;padding:26px 20px;text-align:center}

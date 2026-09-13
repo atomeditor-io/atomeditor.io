@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Part 4 — UI &amp; feature refresh · atomeditor.io</title>
+<link rel="stylesheet" href="../style.css">
+<nav><a class="brand" href="../../index.html"><svg width="26" height="26" viewBox="0 0 120 120"><circle cx="60" cy="60" r="12" fill="#78b743"/><g fill="none" stroke="#78b743" stroke-width="7"><ellipse cx="60" cy="60" rx="52" ry="20"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(60 60 60)"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(120 60 60)"/></g></svg>atom · blog</a><span class="spacer"></span><a class="nl" href="../index.html">All posts</a><a class="nl" href="https://github.com/atomeditor-io/atom/issues/1">Chase log</a></nav>
+<div class="wrap">
+<article>
+<h1>UI &amp; feature refresh — keep the soul, modernize the chrome</h1>
+<p class="meta">2026-09-13 · Part 4 of the chase log</p>
+<p>The core editor climbs Electron fine now. The next stretch is the surface: which bundled packages actually crash on modern Chromium, which ones deserve a deliberate bump, and how the interface should feel in 2026.</p>
+<h2>Debug first</h2>
+<p>An audit of the 90+ bundled packages ranks the real user-visible breakages:</p>
+<ol>
+<li><b>github</b> — the renderer 404s when its web worker loads over <code>file://</code> under modern Chromium; candidate fix is a custom protocol / <code>allowFileAccess</code>.</li>
+<li><b>tree-sitter</b> — null-node type errors on some files; grammars get non-fatal fallback to the tokenizer, then per-grammar fixes.</li>
+<li><b>autocomplete-*</b> — legacy <code>requestAnimationFrame</code> / TextBuffer API drift.</li>
+<li><b>spell-check</b> — hunspell path and dictionary fetching.</li>
+</ol>
+<h2>Update deliberately, not wholesale</h2>
+<p>Bumping every pin at once invites API churn across core. The rule is <b>one package per release rung</b>, gated by the test-install + smoke gate, security fixes first, and commit-pinned dependencies kept reproducible — never floating branches.</p>
+<p>Where Pulsar already modernized a package, we adopt their port when licensing matches (MIT).</p>
+<h2>Curated additions</h2>
+<p>Not everything worth having is bundled. Candidates, opt-out capable, each with a smoke entry:</p>
+<ul>
+<li><b>Editor</b>: <code>minimap</code>, <code>highlight-selected</code>, <code>tab-numbers</code>, <code>project-manager</code>.</li>
+<li><b>Tooling</b>: <code>linter</code> + <code>linter-ui-default</code> behind an “enhanced tooling” opt-in; <code>atom-typescript</code>.</li>
+<li><b>Git</b>: <code>git-grep</code>, <code>merge-conflicts</code>, <code>git-log</code>.</li>
+<li><b>Markdown</b>: <code>markdown-preview-enhanced</code>.</li>
+<li><b>Quality-of-life</b>: <code>file-icons</code>, <code>relative-numbers</code>, <code>script</code>.</li>
+<li><b>Themes</b>: a community-theme pack (dracula, material, nord, gruvbox) as optional download; default stays one-dark.</li>
+</ul>
+<h2>UI refresh</h2>
+<p>The redesign philosophy is explicit: <b>don't try to be VS Code</b> — compete on philosophy. Keep the hackable soul, refresh the chrome.</p>
+<ul>
+<li><b>Tab bar</b> — rounded tabs, accent underline for the active one, always-visible close buttons.</li>
+<li><b>Tree view</b> — collapsed sections, tighter nesting, sticky project header, optional file-type icons.</li>
+<li><b>Command palette</b> — grouped results, recent-first, keybinding hints.</li>
+<li><b>Settings</b> — card layout, search-first, live theme preview, JSON import/export.</li>
+<li><b>Accessibility</b> — ARIA on custom elements, high-contrast mode, 44px touch targets, color-blind-safe theme.</li>
+<li><b>Theme compatibility</b> — new styles behind CSS variables; legacy themes keep working, changes are opt-in.</li>
+</ul>
+<p>Phase 1 is the low-hanging fruit (tab bar, status-bar actions, focus rings); the tree view and find/replace land next. Everything rides the same per-rung release cadence — gated, greened, shipped.</p>
+</article>
+</div>
+<footer>Fork of <a href="https://github.com/atom/atom">atom/atom</a> (MIT) · <a href="https://atomeditor.io">atomeditor.io</a></footer>
