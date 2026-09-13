@@ -25,7 +25,9 @@ const EXTRA = (process.env.EXTRA_REPOS || [
   'steelbrain/linter-ui-default',
   'shd101wyy/markdown-preview-enhanced',
   'smashwilson/merge-conflicts',
-  'TypeStrong/atom-typescript'
+  'TypeStrong/atom-typescript',
+  'arcticicestudio/nord-atom-ui',
+  'arcticicestudio/nord-atom-syntax'
 ]).join(',');
 const EXTRA_REPOS = EXTRA.split(',').map(s => s.trim()).filter(Boolean);
 // Infra/meta repos that ship a package.json but are not installable packages.
@@ -158,6 +160,7 @@ async function buildPackage(meta) {
       description: pkg.description || meta.description || '',
       repository: { type: 'git', url: String(repositoryUrl).replace(/^git\+/, '') },
       website: `https://github.com/${meta.org}/${meta.name}`,
+      theme: isTheme,
       ...(engines ? { engines } : {})
     },
     releases: {
@@ -235,11 +238,14 @@ async function main() {
     }
   }
 
+  // Index files carry FULL records so apm's search can fetch the whole list
+  // once and filter locally (the static site can't answer arbitrary ?q=).
+  // /api/packages carries packages AND themes (as atom.io's search did); the
+  // /api/themes index stays theme-only for browsing; featured stays split.
   const themeRecords = finalPkgs.filter(p => p.theme);
-  const pkgIndex = finalPkgs.filter(p => !p.theme).map(lightRecord);
-  const themeIndex = themeRecords.map(lightRecord);
+  const themeIndex = themeRecords;
 
-  writeJsonHtml(path.join(OUT_DIR, 'packages', 'index.html'), pkgIndex);
+  writeJsonHtml(path.join(OUT_DIR, 'packages', 'index.html'), finalPkgs);
   writeJsonHtml(path.join(OUT_DIR, 'themes', 'index.html'), themeIndex);
   // featured needs FULL pack objects (apm renderer filters on pack.releases.latest)
   writeJsonHtml(path.join(OUT_DIR, 'packages', 'featured'), finalPkgs.filter(p => !p.theme).slice(0, 60));
