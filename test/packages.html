@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Packages</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" media="all" href="assets/css/application.css" />
+    <meta property="og:site_name" content="Atom" />
+    <meta
+      property="og:title"
+      content="Packages — Atom"
+    />
+    <meta
+      name="description"
+      content="Browse open source Atom packages."
+    />
+    <link rel="shortcut icon" href="assets/png/logo-small.png" />
+    <style>
+      #registry-status {
+        padding: 12px 0;
+        color: #586069;
+      }
+      .sort-control {
+        margin-bottom: 16px;
+      }
+      .sort-control label {
+        margin-right: 6px;
+        color: #586069;
+      }
+    </style>
+  </head>
+  <body class="is-responsive">
+    <div class="footer-push">
+      <nav class="top-bar" aria-label="Primary">
+        <div class="wrapper no-pad">
+          <ul class="navigation">
+            <li>
+              <h1>
+                <a
+                  class="logo-small"
+                  href="index.html"
+                  title="Atom: A hackable text editor for the 21st Century"
+                ></a>
+              </h1>
+            </li>
+            <li>
+              <a class="is-selected" href="packages.html">Packages</a>
+            </li>
+            <li>
+              <a class="" href="themes.html">Themes</a>
+            </li>
+            <li>
+              <a href="https://github.com/atomeditor-io/atom">Documentation</a>
+            </li>
+            <li>
+              <a href="https://blog.atom.io/">Blog</a>
+            </li>
+            <li>
+              <a href="https://github.com/atomeditor-io/atom/releases">Releases</a>
+            </li>
+          </ul>
+
+          <div class="top-bar-right">
+            <a href="https://github.com/atomeditor-io">
+              <span class="octicon octicon-mark-github"></span> GitHub
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div id="js-pjax-container">
+        <div class="wrapper content-push packages">
+          <div class="section-heading">
+            <div class="search">
+              <form
+                action="packages.html"
+                accept-charset="UTF-8"
+                method="get"
+                id="packages-search-form"
+              >
+                <input
+                  onkeyup="registry.search(this.value)"
+                  onchange="registry.search(this.value)"
+                  type="text"
+                  name="q"
+                  id="packages-search"
+                  class="input-block"
+                  placeholder="Search Atom packages"
+                  autocomplete="off"
+                  autocorrect="off"
+                  spellcheck="false"
+                />
+
+                <div class="sort-control">
+                  <label for="sort-method">Sort:</label>
+                  <select id="sort-method" onchange="registry.sort(this.value)">
+                    <option value="stars">Stars</option>
+                    <option value="name">Name</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+
+            <p id="registry-status"></p>
+          </div>
+
+          <div class="package-list">
+            <div class="package-list-header">
+              <h3 class="package-list-title">
+                <span class="mega-octicon octicon-package"></span>
+                Packages
+              </h3>
+            </div>
+            <div id="registry-list" class="halves"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-pad"></div>
+    </div>
+
+    <footer>
+      <div class="footer">
+        <div class="wrapper no-pad">
+          <ul class="footer-left">
+            <li>
+              <a
+                href="https://docs.github.com/en/github/site-policy/github-open-source-applications-terms-and-conditions"
+                >Terms of Use</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://docs.github.com/en/free-pro-team@latest/github/site-policy/github-privacy-statement"
+                >Privacy</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/atomeditor-io/atom/blob/master/CODE_OF_CONDUCT.md"
+                >Code of Conduct</a
+              >
+            </li>
+            <li>
+              <a href="https://github.com/atomeditor-io/atom/releases"
+                >Releases</a
+              >
+            </li>
+            <li>
+              <a href="https://github.com/atomeditor-io/atom">FAQ</a>
+            </li>
+            <li>
+              <a href="https://github.com/atomeditor-io/atom/discussions"
+                >Contact</a
+              >
+            </li>
+          </ul>
+
+          <div class="footer-right">
+            <a href="https://github.com/atomeditor-io"
+              ><span class="octicon octicon-code"></span> with
+              <span class="octicon octicon-heart"></span> by
+              <span class="octicon octicon-mark-github"></span
+            ></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div id="lean_overlay"></div>
+
+    <script>
+      const registry = {
+        data: [],
+        sortBy: "stars",
+        init() {
+          fetch("/api/packages/")
+            .then((r) => {
+              if (!r.ok) throw new Error("HTTP " + r.status);
+              return r.json();
+            })
+            .then((data) => {
+              this.data = data.filter((p) => !p.theme);
+              this.render();
+            })
+            .catch((err) => {
+              const el = document.getElementById("registry-status");
+              el.textContent =
+                "Unable to load package registry: " + err.message;
+            });
+        },
+        search(query) {
+          this.query = query || "";
+          this.render();
+        },
+        sort(by) {
+          this.sortBy = by;
+          this.render();
+        },
+        starsLabel(p) {
+          const n = p.stars || 0;
+          if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+          return String(n);
+        },
+        authorOf(p) {
+          const repo = p.repository?.url || p.website || "";
+          const m = repo.match(/github\.com[\/:]([^\/]+)/);
+          return m ? m[1] : "unknown";
+        },
+        repoOf(p) {
+          return p.repository?.url || p.website || "#";
+        },
+        render() {
+          const list = document.getElementById("registry-list");
+          if (!list) return;
+          list.innerHTML = "";
+          let items = this.data.slice();
+          if (this.query) {
+            const q = this.query.toLowerCase();
+            items = items.filter(
+              (p) =>
+                p.name.toLowerCase().includes(q) ||
+                (p.description || "").toLowerCase().includes(q),
+            );
+          }
+          if (this.sortBy === "name") {
+            items.sort((a, b) => a.name.localeCompare(b.name));
+          } else {
+            items.sort((a, b) => (b.stars || 0) - (a.stars || 0));
+          }
+          const status = document.getElementById("registry-status");
+          status.textContent = (this.data.length ? this.data.length : "…") +
+            " packages" +
+            (this.query ? " matching \"" + this.query + "\"" : "");
+
+          items.forEach((p) => {
+            const cell = document.createElement("div");
+            cell.className = "grid-cell";
+            const kw = (p.metadata && p.metadata.keywords) || [];
+            cell.innerHTML =
+              '<div class="package-card card">' +
+              '  <div class="body css-truncate">' +
+              '    <h4 class="card-name">' +
+              '      <span class="css-truncate-target"><a href="' +
+              this.repoOf(p) +
+              '">' +
+              esc(p.name) +
+              "</a></span>" +
+              "    </h4>" +
+              '    <span class="css-truncate-target card-description">' +
+              esc(p.description || "") +
+              "</span>" +
+              (kw.length
+                ? '      <ul class="keywords">' +
+                  kw
+                    .map(
+                      (k) =>
+                        "<li><a href=\"packages.html?q=keyword:" +
+                        esc(k) +
+                        "\" title=\"Keyword: #" +
+                        esc(k) +
+                        "\">#" +
+                        esc(k) +
+                        "</a></li>",
+                    )
+                    .join("") +
+                  "</ul>"
+                : "") +
+              "  </div>" +
+              '  <div class="meta">' +
+              '    <a class="author" href="' +
+              this.repoOf(p) +
+              '">' +
+              esc(this.authorOf(p)) +
+              "</a>" +
+              '    <div class="meta-right">' +
+              '      <span class="stat tooltipped tooltipped-n" aria-label="' +
+              (p.stars || 0) +
+              ' stars">' +
+              '        <span class="octicon octicon-star"></span>' +
+              '        <span class="value">' +
+              this.starsLabel(p) +
+              "</span>" +
+              "      </span>" +
+              '      <a class="card-install-button minibutton" href="atom://settings-view/show-package?package=' +
+              esc(p.name) +
+              '"><span class="octicon octicon-cloud-download"></span> Install</a>' +
+              "    </div>" +
+              "  </div>" +
+              "</div>";
+            list.appendChild(cell);
+          });
+          if (!items.length) {
+            list.innerHTML =
+              '<p class="packages-empty">No packages found.</p>';
+          }
+        },
+      };
+
+      function esc(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          }[c];
+        });
+      }
+
+      registry.init();
+    </script>
+  </body>
+</html>
