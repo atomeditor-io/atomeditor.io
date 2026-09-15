@@ -50,7 +50,7 @@
               <a class="" href="themes.html">Themes</a>
             </li>
             <li>
-              <a href="https://github.com/atomeditor-io/atom">Documentation</a>
+              <a href="https://atomeditor-io.github.io/flight-manual.atom.io/">Documentation</a>
             </li>
             <li>
               <a href="https://blog.atom.io/">Blog</a>
@@ -181,6 +181,12 @@
             })
             .then((data) => {
               this.data = data.filter((p) => !p.theme);
+              const urlq = new URLSearchParams(location.search).get("q");
+              if (urlq) {
+                this.query = urlq;
+                const el = document.getElementById("packages-search");
+                if (el) el.value = urlq;
+              }
               this.render();
             })
             .catch((err) => {

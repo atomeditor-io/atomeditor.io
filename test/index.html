@@ -50,7 +50,7 @@
               <a class="" href="themes.html">Themes</a>
             </li>
             <li>
-              <a href="https://github.com/atomeditor-io/atom">Documentation</a>
+              <a href="https://atomeditor-io.github.io/flight-manual.atom.io/">Documentation</a>
             </li>
             <li>
               <a href="https://blog.atom.io/">Blog</a>
@@ -142,13 +142,16 @@
                     >
                   </li>
                   <li>
-                    <span class="platform">macOS</span>
-                    <span class="support">For macOS 10.9 or later</span>
+                    <span class="platform" id="js-platform">macOS</span>
+                    <span class="support" id="js-support"
+                      >For macOS 10.9 or later</span
+                    >
                   </li>
                   <li>
                     <a
                       href="https://github.com/atomeditor-io/atom/releases/latest"
                       class="welcome-button js-download-button"
+                      id="js-download-button"
                       ><span class="octicon octicon-move-down"></span
                       >Download</a
                     >
@@ -232,7 +235,7 @@
               </p>
 
               <p class="welcome-cta">
-                <a href="https://github.com/atomeditor-io/atom/releases" class="welcome-button"
+                <a href="packages.html?q=teletype" class="welcome-button"
                   >Learn more</a
                 >
               </p>
@@ -269,7 +272,7 @@
               </p>
 
               <p class="welcome-cta">
-                <a href="https://github.com/atomeditor-io/atom/releases" class="welcome-button"
+                <a href="packages.html?q=atom-ide" class="welcome-button"
                   >Learn more</a
                 >
               </p>
@@ -302,7 +305,7 @@
               </p>
 
               <p class="welcome-cta">
-                <a href="https://github.com/atomeditor-io/atom/releases" class="welcome-button"
+                <a href="https://atomeditor-io.github.io/flight-manual.atom.io/using-atom/sections/github-package" class="welcome-button"
                   >Learn more</a
                 >
               </p>
@@ -518,5 +521,91 @@
     </footer>
 
     <div id="lean_overlay"></div>
+    <script>
+      function detectOS() {
+        var ua = navigator.userAgent;
+        var plat =
+          (navigator.userAgentData && navigator.userAgentData.platform) ||
+          navigator.platform ||
+          "";
+        function hit(p) {
+          return ua.indexOf(p) > -1 || plat.indexOf(p) > -1;
+        }
+        if (hit("Mac"))
+          return {
+            platform: "macOS",
+            support: "For macOS 10.10 or later",
+            pick: function (a) {
+              return /\.zip$/.test(a.name.toLowerCase()) && /\bmac\b/.test(a.name.toLowerCase());
+            },
+          };
+        if (hit("Win"))
+          return {
+            platform: "Windows",
+            support: "Windows x64",
+            pick: function (a) {
+              return /\.exe$/.test(a.name.toLowerCase());
+            },
+          };
+        if (hit("Linux") || hit("X11")) {
+          if (/fedora|rhel|centos|opensuse|suse|rocky|alma|amazon/i.test(ua))
+            return {
+              platform: "Fedora/RHEL",
+              support: "x86_64 .rpm",
+              pick: function (a) {
+                return /\.rpm$/.test(a.name.toLowerCase());
+              },
+            };
+          return {
+            platform: "Debian/Ubuntu",
+            support: "amd64 .deb",
+            pick: function (a) {
+              return /\.deb$/.test(a.name.toLowerCase());
+            },
+          };
+        }
+        return {
+          platform: "",
+          support: "",
+          pick: function (a) {
+            return /\.deb$/.test(a.name.toLowerCase());
+          },
+        };
+      }
+
+      var os = detectOS();
+      var platEl = document.getElementById("js-platform");
+      var supEl = document.getElementById("js-support");
+      var dlbtn = document.getElementById("js-download-button");
+      if (os.platform) {
+        platEl.textContent = os.platform;
+        supEl.textContent = os.support;
+      }
+      dlbtn.addEventListener("click", function () {
+        if (dlbtn.href.indexOf("releases/latest") === -1) return;
+      });
+      fetch("https://api.github.com/repos/atomeditor-io/atom/releases/latest")
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (d) {
+          if (!d.tag_name) return;
+          var vm = d.tag_name.match(/e(\d+)/);
+          if (vm)
+            document.querySelector(".version").textContent =
+              "1.63 · e" + vm[1];
+          var asset = (d.assets || []).find(os.pick);
+          if (asset) dv(dlbtn, asset.browser_download_url);
+          else dv(dlbtn, "https://github.com/atomeditor-io/atom/releases/latest");
+        })
+        .catch(function () {});
+      function dv(el, href) {
+        el.setAttribute("href", href);
+        el.setAttribute(
+          "title",
+          (os.platform ? os.platform + " — " : "") + href.split("/").pop(),
+        );
+      }
+    </script>
   </body>
 </html>
