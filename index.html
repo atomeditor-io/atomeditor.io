@@ -1,166 +1,611 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Atom — atomeditor.io</title>
-<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><circle cx="60" cy="60" r="12" fill="%2378b743"/><g fill="none" stroke="%2378b743" stroke-width="7"><ellipse cx="60" cy="60" rx="52" ry="20"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(60 60 60)"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(120 60 60)"/></g></svg>'>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:#2b2f35;color:#efefef;-webkit-font-smoothing:antialiased}
-a{color:#7db5f5;text-decoration:none}
-nav{background:#212428;display:flex;align-items:center;gap:26px;padding:13px 28px;position:sticky;top:0;z-index:10}
-nav .brand{display:flex;align-items:center;gap:9px;color:#fff!important;font-size:16px}
-nav .spacer{flex:1}
-nav a.nl{color:#a7adb5;font-size:14px}
-nav a.nl:hover{color:#fff}
-.hero{background:#33373d;text-align:center;padding:64px 20px 0;position:relative;overflow:hidden}
-.hero .logo{width:120px;height:120px;margin:0 auto 18px}
-.hero h1{font-size:44px;font-weight:300;letter-spacing:.5px}
-.hero h1 b{font-weight:500}
-.hero p.sub{color:#a7adb5;font-size:19px;font-weight:300;margin:12px 0 26px}
-.dl-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
-a.dl{background:#78b743;color:#fff!important;font-size:17px;border-radius:4px;padding:13px 34px;display:inline-block}
-a.dl small{display:block;font-size:12px;font-weight:400;opacity:.9;margin-top:2px}
-a.gh{background:transparent;border:1px solid #6b7178;color:#e6e8eb!important;font-size:17px;border-radius:4px;padding:13px 30px;display:inline-block}
-.hero .rev{font-size:13px;color:#8b9199;margin:14px 0 0}
-.hero .rev b{color:#c8cdd2}
-.shot{background:#212428;text-align:center}
-.shot .frame{max-width:960px;margin:0 auto}
-.shot img{width:100%;display:block;border-radius:6px 6px 0 0;box-shadow:0 -8px 40px rgba(0,0,0,.5)}
-.stats{background:#212428;border-top:1px solid #343a43;display:flex;justify-content:center;gap:48px;flex-wrap:wrap;padding:22px 20px;text-align:center}
-.stats b{display:block;font-size:24px;font-weight:400}
-.stats span{font-size:13px;color:#8b9199}
-.rows{background:#efefef;color:#33373d;padding:60px 20px}
-.rows h2,.features h2,.blog h2{text-align:center;font-weight:300;font-size:30px;margin-bottom:8px}
-.rows p.lead,.features p.lead,.blog p.lead{text-align:center;color:#6b7178;max-width:640px;margin:0 auto 40px}
-.row{max-width:960px;margin:0 auto 48px;display:flex;gap:40px;align-items:center;flex-wrap:wrap}
-.row:last-child{margin-bottom:0}
-.row .txt{flex:1;min-width:260px}
-.row .txt h3{font-size:21px;font-weight:400;margin-bottom:8px}
-.row .txt p{color:#5c6166;font-size:15px}
-.row .vis{flex:1;min-width:260px}
-.term{background:#1e2126;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:Menlo,Consolas,monospace;font-size:13.5px}
-.term .bar{background:#343a43;color:#a7adb5;padding:7px 12px;font-size:12px}
-.term .body{padding:14px 16px;color:#d7dae0;line-height:1.7}
-.term .g{color:#78b743}.term .c{color:#8b9199}.term .y{color:#e5c07b}
-.code{background:#282c34;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:Menlo,Consolas,monospace;font-size:13px}
-.code .body{padding:14px 16px;line-height:1.75;color:#abb2bf}
-.k{color:#c678dd}.f{color:#61afef}.s{color:#98c379}.n{color:#d19a66}.m{color:#8b9199}
-.panes{background:#1e2126;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.25);display:flex;font-size:12px}
-.panes .p{flex:1;border-right:1px solid #343a43;min-height:150px}
-.panes .p:last-child{border:0}
-.panes .t{background:#343a43;color:#a7adb5;padding:6px 10px;font-family:Menlo,Consolas,monospace}
-.panes .b{padding:10px 12px;font-family:Menlo,Consolas,monospace;line-height:1.8;color:#abb2bf}
-.ai{background:#1e2126;padding:60px 20px;text-align:center;border-top:4px solid #78b743}
-.ai h2{font-weight:300;font-size:30px;margin-bottom:10px}
-.ai h2 b{color:#78b743;font-weight:500}
-.ai p{color:#a7adb5;max-width:620px;margin:0 auto 24px}
-.features{background:#efefef;color:#33373d;padding:56px 20px;text-align:center}
-.grid{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:28px;text-align:left}
-.grid h3{font-size:17px;margin-bottom:6px}
-.grid p{font-size:14px;color:#5c6166}
-.blog{background:#2b2f35;padding:52px 20px;text-align:center}
-.blog .cards{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;text-align:left}
-.blog .card{background:#33373d;border:1px solid #43484f;border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:8px}
-.blog .card h3{margin:0;font-size:17px;font-weight:500}
-.blog .card h3 a{color:#fff}
-.blog .card .date{font-size:12px;color:#8b9199}
-.blog .card p{font-size:13.5px;color:#b9bec6;margin:0;flex:1}
-.blog .card a.more{font-size:13px}
-.ladder{background:#2b2f35;padding:52px 20px;text-align:center}
-.ladder h2{font-weight:300;font-size:28px;margin-bottom:6px}
-.ladder p{color:#a7adb5;margin-bottom:22px}
-table{margin:0 auto;border-collapse:collapse;font-size:14px;min-width:min(560px,92vw)}
-td,th{border-bottom:1px solid #43484f;padding:9px 14px;text-align:left}
-th{color:#8b9199;font-weight:500}
-footer{background:#212428;color:#8b9199;font-size:13px;padding:34px 20px;text-align:center}
-footer .cols{max-width:960px;margin:0 auto 22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;text-align:left}
-footer h4{color:#c8cdd2;font-size:13px;margin-bottom:8px;font-weight:500}
-footer a{display:block;color:#8b9199;margin:4px 0}
-footer a:hover{color:#fff}
-code{background:rgba(255,255,255,.08);padding:.1em .4em;border-radius:4px;font-size:.92em}
-.features code,.rows code{background:rgba(0,0,0,.07)}
-</style>
-<nav><a class="brand" href="#"><svg width="26" height="26" viewBox="0 0 120 120"><circle cx="60" cy="60" r="12" fill="#78b743"/><g fill="none" stroke="#78b743" stroke-width="7"><ellipse cx="60" cy="60" rx="52" ry="20"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(60 60 60)"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(120 60 60)"/></g></svg>atom <span style="color:#8b9199;font-size:13px">atomeditor.io</span></a><span class="spacer"></span><a class="nl" href="https://atomeditor-io.github.io/flight-manual.atom.io/">Docs</a><a class="nl" href="https://github.com/atomeditor-io/atom/releases">Releases</a><a class="nl" href="https://github.com/atomeditor-io/atom-ai">atom-ai</a><a class="nl" href="https://github.com/atomeditor-io/atom/issues/1">Chase log</a><a class="nl" href="blog/index.html">Blog</a><a class="nl" href="https://github.com/atomeditor-io/atom/blob/electron-upgrade-e38/docs/building-debian13.md">Building</a></nav>
-<div class="hero">
-<svg class="logo" viewBox="0 0 120 120"><circle cx="60" cy="60" r="10" fill="#78b743"/><g fill="none" stroke="#78b743" stroke-width="5"><ellipse cx="60" cy="60" rx="52" ry="20"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(60 60 60)"/><ellipse cx="60" cy="60" rx="52" ry="20" transform="rotate(120 60 60)"/></g><circle cx="108" cy="60" r="6" fill="#5da332"/><circle cx="36" cy="101" r="6" fill="#5da332"/><circle cx="36" cy="19" r="6" fill="#5da332"/></svg>
-<h1>A hackable <b>text editor</b> for the 21st Century</h1>
-<p class="sub">Revived by <b>atomeditor.io</b> — Atom 1.63.1 climbing modern Electron, rung by rung.</p>
-<div class="dl-row"><a class="dl" id="dlbtn" href="https://github.com/atomeditor-io/atom/releases">Download<span style="display:block;font-size:12px" id="dlver">latest release</span></a><a class="gh" href="https://github.com/atomeditor-io/atom">View on GitHub</a></div>
-<p class="rev">Now shipping: <b id="rung">Atom 1.63.1 on modern Electron</b> · <a href="https://github.com/atomeditor-io/atom/issues/1">chase log</a></p>
-<br>
-</div>
-<div class="shot"><div class="frame"><img src="https://user-images.githubusercontent.com/378023/49132478-f4b77680-f31f-11e8-9e10-e8454d8d9b7e.png" alt="Atom screenshot"></div></div>
-<div class="stats"><div><b id="st-rungs">25</b><span>Electron rungs</span></div><div><b id="st-rel">30+</b><span>releases shipped</span></div><div><b>300+</b><span>org repos mirrored</span></div><div><b id="st-date">—</b><span>latest release</span></div></div>
-<div class="rows">
-<h2>Built for the way you work</h2>
-<p class="lead">Everything the original was loved for — plus the two things it always missed.</p>
-<div class="row"><div class="txt"><h3>Built-in package manager</h3><p>‹packages pulled from repos on gh›. The old atom.io registry is dead, so <code>apm</code> now talks to a static, GitHub-backed registry hosted right here on atomeditor.io — every install resolves straight to the source repository.</p></div><div class="vis"><div class="term"><div class="bar">terminal</div><div class="body"><span class="c">$</span> apm install minimap<br><span class="g">✓</span> Installing minimap ✓<br><span class="c">$</span> apm install owner/<span class="y">my-theme</span><br><span class="g">✓</span> Installing my-theme ✓</div></div></div></div>
-<div class="row"><div class="vis"><div class="code"><div class="body"><span class="m">// smart autocompletion, tree-sitter highlighting</span><br><span class="k">function</span> <span class="f">revive</span>(editor) {<br>&nbsp;&nbsp;<span class="k">return</span> editor.<span class="f">open</span>(<span class="s">"future.js"</span>);<br>}</div></div></div><div class="txt"><h3>Smart autocompletion &amp; highlighting</h3><p>Tree-sitter grammars and fuzzy-native completion keep up as you type — exercised on real files in every rung's smoke tests.</p></div></div>
-<div class="row"><div class="txt"><h3>Multiple panes, file browser, find &amp; replace</h3><p>Split any direction, browse the tree, project-wide search — the classic Atom workflow, untouched, running on modern Chromium.</p></div><div class="vis"><div class="panes"><div class="p"><div class="t">future.js</div><div class="b"><span style="color:#c678dd">const</span> x = <span style="color:#d19a66">42</span>;</div></div><div class="p"><div class="t">notes.md</div><div class="b" style="color:#9aa3ad"># rung 25<br>ship it</div></div></div></div></div>
-</div>
-<div class="ai">
-<h2>Teletype is gone. <b>atom-ai</b> is here.</h2>
-<p>The original let you code together in real time. The revival pairs you with an AI agent instead: <a href="https://github.com/atomeditor-io/atom-ai">atom-ai</a> docks a panel in Atom and bridges CLI coding agents — opencode, aider, claude — with file and selection context. No API keys, no cloud account.</p>
-<div class="dl-row"><a class="gh" href="https://github.com/atomeditor-io/atom-ai">Get atom-ai</a></div>
-</div>
-<div class="features">
-<h2>Cross-platform, packaged for yours</h2>
-<p class="lead">Every rung ships CI-built binaries. Unsigned for now — right-click → Open on first launch.</p>
-<div class="grid">
-<div><h3>Debian / Ubuntu</h3><p><code>atom-amd64-1.63.1-e38.1.deb</code> — install with dpkg, runs on modern Debian.</p></div>
-<div><h3>Fedora / RHEL</h3><p><code>atom-x86_64-1.63.1-e38.1.rpm</code> — same build, rpm-packaged on CI.</p></div>
-<div><h3>macOS</h3><p><code>atom-mac-1.63.1-e38.1.zip</code> — x64 build, via CI.</p></div>
-<div><h3>Windows</h3><p>Squirrel <code>atom-x64-1.63.1-e38.1-setup.exe</code> — via CI.</p></div>
-</div>
-</div>
-<div class="blog">
-<h2>From the blog</h2>
-<p class="lead">The revival story, the registry, and what's next.</p>
-<div class="cards">
-<div class="card"><h3><a href="blog/posts/part-1-the-revival.html">Part 1 — The revival</a></h3><span class="date">2026-09-13</span><p>Why we're keeping Atom alive on modern Electron, rung by rung — and where the chase ladder stands today.</p><a class="more" href="blog/posts/part-1-the-revival.html">Read →</a></div>
-<div class="card"><h3><a href="blog/posts/part-3-the-ecosystem-registry.html">Part 3 — The ecosystem registry</a></h3><span class="date">2026-09-13</span><p>The atom.io API is gone. Here's the static, GitHub-backed registry that keeps <code>apm install</code> working.</p><a class="more" href="blog/posts/part-3-the-ecosystem-registry.html">Read →</a></div>
-<div class="card"><h3><a href="blog/posts/part-4-ui-and-features.html">Part 4 — UI &amp; feature refresh</a></h3><span class="date">2026-09-13</span><p>Debug priorities, selective package updates, and the plan for a modern UI pass that keeps Atom's soul.</p><a class="more" href="blog/posts/part-4-ui-and-features.html">Read →</a></div>
-</div>
-</div>
-<div class="ladder">
-<h2>The chase ladder</h2>
-<p>Debian baseline plus every Electron rung, all CI-built. Full per-rung reports in <a href="https://github.com/atomeditor-io/atom/issues/1">issue #1</a>.</p>
-<table><tr><th>Base</th><th>Rungs</th><th>Status</th></tr><tr><td>v1.63.1-debian13.1</td><td>Electron 11</td><td>baseline, green</td></tr><tr><td>e13.1 → e38.x</td><td>Electron 13 → 38</td><td id="ladder-live">all green, released</td></tr></table>
-</div>
-<footer><div class="cols"><div><h4>Download</h4><a href="https://github.com/atomeditor-io/atom/releases">Releases</a><a href="https://github.com/atomeditor-io/atom/releases/latest">Latest</a></div><div><h4>Project</h4><a href="https://github.com/atomeditor-io/atom">Source</a><a href="https://github.com/atomeditor-io/atom/issues/1">Chase log</a><a href="https://github.com/atomeditor-io/atom-ai">atom-ai</a></div><div><h4>Develop</h4><a href="https://atomeditor-io.github.io/flight-manual.atom.io/">Documentation</a><a href="https://github.com/atomeditor-io/atom/blob/electron-upgrade-e38/docs/building-debian13.md">Building</a><a href="https://github.com/atomeditor-io">atomeditor-io org</a></div></div>Fork of <a style="display:inline" href="https://github.com/atom/atom">atom/atom</a> (MIT) · atom.io design homage · formerly <a style="display:inline" href="https://atom.io">atom.io</a></footer>
-<script>
-function detectOS(){
-  var ua=navigator.userAgent, plat=(navigator.userAgentData&&navigator.userAgentData.platform)||navigator.platform||"";
-  function hit(p){return ua.indexOf(p)>-1||plat.indexOf(p)>-1;}
-  if(hit("Mac"))return{label:"macOS — zip",pick:function(a){return /\b(mac|darwin)\b|\.dmg$|\.pkg$/.test(a.name.toLowerCase());}};
-  if(hit("Win"))return{label:"Windows — Setup.exe",pick:function(a){return /\.exe$/.test(a.name.toLowerCase());}};
-  if(hit("Linux")||hit("X11")){
-    if(/fedora|rhel|centos|opensuse|suse|rocky|alma|amazon/i.test(ua))
-      return{label:"Fedora/RHEL — rpm",pick:function(a){return /\.rpm$/.test(a.name.toLowerCase());}};
-    return{label:"Debian/Ubuntu — deb",pick:function(a){return /\.deb$/.test(a.name.toLowerCase());}};
-  }
-  return{label:"latest release",pick:function(a){return /\.deb$/.test(a.name.toLowerCase());}};
-}
-var os=detectOS();
-fetch("https://api.github.com/repos/atomeditor-io/atom/releases/latest").then(r=>r.json()).then(d=>{
-if(!d.tag_name)return;
-var asset=(d.assets||[]).find(os.pick);
-document.getElementById("st-date").textContent=d.published_at.slice(0,10);
-var m=d.tag_name.match(/e(\d+)/);if(m)document.getElementById("rung").textContent="Atom 1.63.1 on Electron "+m[1];
-if(asset){
-  document.getElementById("dlver").textContent=d.tag_name+" · "+d.published_at.slice(0,10)+" · for "+os.label;
-  document.getElementById("dlbtn").href=asset.browser_download_url;
-}else{
-  document.getElementById("dlver").textContent=os.label+" — coming soon";
-  document.getElementById("dlbtn").href="https://github.com/atomeditor-io/atom/releases";
-}
-}).catch(()=>{});
-fetch("https://api.github.com/repos/atomeditor-io/atom/releases?per_page=100").then(r=>r.json()).then(d=>{
-if(Array.isArray(d)){document.getElementById("st-rel").textContent=d.length+"+";
-var es=new Set();d.forEach(x=>{var m=(x.tag_name||"").match(/e(\d+)\./);if(m)es.add(m[1])});if(es.size)document.getElementById("st-rungs").textContent=es.size;}
-}).catch(()=>{});
-</script>
-<!-- rebuilt 2026-09-13T12:43:39Z -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Atom</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" media="all" href="assets/css/application.css" />
+    <meta
+      property="og:url"
+      content="https://atomeditor.io/"
+    />
+    <meta property="og:site_name" content="Atom" />
+    <meta
+      property="og:title"
+      content="A hackable text editor for the 21st Century"
+    />
+    <meta
+      property="og:description"
+      content="At GitHub, we're building the text editor we've always wanted: hackable to the core, but approachable on the first day without ever touching a config file. We can't wait to see what you build with it."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:author" content="https://www.facebook.com/GitHub" />
+    <meta property="og:image" content="assets/png/atom-mark@1200x630.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      name="description"
+      content="At GitHub, we're building the text editor we've always wanted: hackable to the core, but approachable on the first day without ever touching a config file. We can't wait to see what you build with it."
+    />
+    <link rel="shortcut icon" href="assets/png/logo-small.png" />
+  </head>
+  <body class="is-responsive">
+    <div class="footer-push">
+      <nav class="top-bar" aria-label="Primary">
+        <div class="wrapper no-pad">
+          <ul class="navigation">
+            <li>
+              <h1>
+                <a
+                  class="logo-small"
+                  href="."
+                  title="Atom: A hackable text editor for the 21st Century"
+                ></a>
+              </h1>
+            </li>
+            <li>
+              <a class="" href="packages.html">Packages</a>
+            </li>
+            <li>
+              <a class="" href="themes.html">Themes</a>
+            </li>
+            <li>
+              <a href="https://atomeditor-io.github.io/flight-manual.atom.io/">Documentation</a>
+            </li>
+            <li>
+              <a href="https://blog.atom.io/">Blog</a>
+            </li>
+            <li>
+              <a href="https://github.com/atomeditor-io/atom/releases">Releases</a>
+            </li>
+          </ul>
 
-<!-- t 1789305744 -->
+          <div class="top-bar-right">
+            <a href="https://github.com/atomeditor-io">
+              <span class="octicon octicon-mark-github"></span> GitHub
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div id="js-pjax-container">
+        <div class="welcome">
+          <section class="section section--hero">
+            <div class="wrapper">
+              <header class="hero-header">
+                <div class="hero-header-item hero-logo" aria-hidden="true">
+                  <div class="hero-logo-circles">
+                    <img
+                      class="hero-logo-circle"
+                      src="assets/svg/portal-red-semi.svg"
+                      alt="Index portal red semi"
+                    />
+                    <img
+                      class="hero-logo-circle"
+                      src="assets/svg/portal-red.svg"
+                      alt="Index portal red"
+                    />
+                    <img
+                      class="hero-logo-circle"
+                      src="assets/svg/portal-orange-semi.svg"
+                      alt="Index portal orange semi"
+                    />
+                    <img
+                      class="hero-logo-circle"
+                      src="assets/svg/portal-orange.svg"
+                      alt="Index portal orange"
+                    />
+                    <img
+                      class="hero-logo-circle"
+                      src="assets/svg/portal-yellow-semi.svg"
+                      alt="Index portal yellow semi"
+                    />
+                    <img
+                      class="hero-logo-circle"
+                      src="assets/svg/portal-yellow.svg"
+                      alt="Index portal yellow"
+                    />
+                    <img
+                      class="hero-logo-circle"
+                      src="assets/svg/portal-green-semi.svg"
+                      alt="Index portal green semi"
+                    />
+                    <img
+                      class="hero-logo-circle"
+                      src="assets/svg/portal-green.svg"
+                      alt="Index portal green"
+                    />
+                    <img
+                      class="hero-logo-circle"
+                      src="assets/svg/portal-blue-semi.svg"
+                      alt="Index portal blue semi"
+                    />
+                    <img
+                      class="hero-logo-circle"
+                      src="assets/svg/portal-blue.svg"
+                      alt="Index portal blue"
+                    />
+                  </div>
+                </div>
+                <ul class="hero-header-item hero-download">
+                  <li>
+                    <img
+                      class="logo-wordmark"
+                      src="assets/svg/atom-wordmark.svg"
+                      alt="Atom wordmark"
+                    />
+                  </li>
+                  <li>
+                    <span class="version">1.63</span>
+                    <a href="https://github.com/atomeditor-io/atom/releases"
+                      >Release notes</a
+                    >
+                  </li>
+                  <li>
+                    <span class="platform" id="js-platform">macOS</span>
+                    <span class="support" id="js-support"
+                      >For macOS 10.9 or later</span
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/atomeditor-io/atom/releases/latest"
+                      class="welcome-button js-download-button"
+                      id="js-download-button"
+                      ><span class="octicon octicon-move-down"></span
+                      >Download</a
+                    >
+                  </li>
+                </ul>
+
+                <p class="hero-meta">
+                  <span class="hero-tos">
+                    By downloading, you agree to the
+                    <a
+                      href="https://docs.github.com/en/github/site-policy/github-open-source-applications-terms-and-conditions"
+                      >Terms and Conditions</a
+                    >.
+                  </span>
+                  <a href="https://github.com/atomeditor-io/atom/releases/latest"
+                    >Other platforms</a
+                  >
+                  <a href="https://github.com/atomeditor-io/atom/releases"
+                    >View all releases</a
+                  >
+                </p>
+              </header>
+
+              <div class="hero-features">
+                <h1 class="hero-tagline">
+                  A hackable
+                  <span class="hero-tagline-highlight">text editor</span> for
+                  the 21st Century
+                </h1>
+                <a
+                  class="hero-link hero-link--teletype"
+                  href="#teletype"
+                  >Real-time collaboration</a
+                >
+                <a
+                  class="hero-link hero-link--ide"
+                  href="#ide"
+                  >IDE features</a
+                >
+                <a
+                  class="hero-link hero-link--github"
+                  href="#github"
+                  >Git and GitHub integration</a
+                >
+              </div>
+
+              <img
+                class="hero-octonaut"
+                src="assets/svg/octonaut.svg"
+                alt="Octonaut"
+              />
+            </div>
+          </section>
+
+          <section id="teletype" class="section section--realtime">
+            <div class="wrapper">
+              <h3>Teletype for Atom</h3>
+
+              <p>
+                Great things happen when developers work together—from teaching
+                and sharing knowledge to building better software. Teletype for
+                Atom makes collaborating on code just as easy as it is to code
+                alone, right from your editor.
+              </p>
+
+              <div class="welcome-bgs">
+                <img
+                  class="welcome-bg welcome-bg--screenshot"
+                  src="assets/png/index-teletype-screenshot.png"
+                  alt="Index teletype screenshot"
+                />
+              </div>
+
+              <p>
+                Share your workspace and edit code together in real time. To
+                start collaborating,
+                <a href="atom://settings-view/show-package?package=teletype"
+                  >open Teletype in Atom</a
+                >
+                and install the package.
+              </p>
+
+              <p class="welcome-cta">
+                <a href="packages.html?q=teletype" class="welcome-button"
+                  >Learn more</a
+                >
+              </p>
+            </div>
+          </section>
+
+          <section id="ide" class="section section--ide">
+            <div class="wrapper">
+              <h3>Atom IDE</h3>
+
+              <p>
+                Atom-IDE is a set of optional packages to bring IDE-like
+                functionality to Atom and improve language integrations.
+              </p>
+
+              <div class="welcome-bgs">
+                <img
+                  class="welcome-bg welcome-bg--screenshot"
+                  src="assets/png/index-ide-screenshot.png"
+                  alt="Index ide screenshot"
+                />
+              </div>
+
+              <p>
+                Get smarter context-aware auto-completion, code navigation
+                features such as an outline view, go to definition and find all
+                references. You can also hover-to-reveal information,
+                diagnostics (errors and warnings) and document formatting. To
+                get all these IDE features,
+                <a href="atom://settings-view/show-package?package=atom-ide-ui"
+                  >open Atom IDE UI in Atom</a
+                >
+                and install the package.
+              </p>
+
+              <p class="welcome-cta">
+                <a href="packages.html?q=atom-ide" class="welcome-button"
+                  >Learn more</a
+                >
+              </p>
+            </div>
+          </section>
+
+          <section id="github" class="section section--github">
+            <div class="wrapper">
+              <h3>GitHub for Atom</h3>
+
+              <p>
+                A text editor is at the core of a developer's toolbox, but it
+                doesn't usually work alone. Work with Git and GitHub directly
+                from Atom with the GitHub package.
+              </p>
+
+              <div class="welcome-bgs">
+                <img
+                  class="welcome-bg welcome-bg--screenshot"
+                  src="assets/png/index-github-screenshot.png"
+                  alt="Index github screenshot"
+                />
+              </div>
+
+              <p>
+                Create new branches, stage and commit, push and pull, resolve
+                merge conflicts, view pull requests and more—all from within
+                your editor. The GitHub package is already bundled with Atom,
+                so you're ready to go!
+              </p>
+
+              <p class="welcome-cta">
+                <a href="https://atomeditor-io.github.io/flight-manual.atom.io/using-atom/sections/github-package" class="welcome-button"
+                  >Learn more</a
+                >
+              </p>
+            </div>
+          </section>
+
+          <section class="section section--features">
+            <div class="wrapper no-pad">
+              <h3>Everything you would expect</h3>
+
+              <div class="features">
+                <div class="features-item">
+                  <span class="mega-octicon octicon-device-desktop"></span>
+                  <h4>Cross-platform editing</h4>
+                  <p>
+                    Atom works across operating systems. Use it on OS X,
+                    Windows, or Linux.
+                  </p>
+                </div>
+                <div class="features-item">
+                  <span class="mega-octicon octicon-package"></span>
+                  <h4>Built-in package manager</h4>
+                  <p>
+                    Search for and install new packages or create your own right
+                    from Atom.
+                  </p>
+                </div>
+                <div class="features-item">
+                  <span class="mega-octicon octicon-light-bulb"></span>
+                  <h4>Smart autocompletion</h4>
+                  <p>
+                    Atom helps you write code faster with a smart and flexible
+                    autocomplete.
+                  </p>
+                </div>
+                <div class="features-item">
+                  <span class="mega-octicon octicon-file-code"></span>
+                  <h4>File system browser</h4>
+                  <p>
+                    Easily browse and open a single file, a whole project, or
+                    multiple projects in one window.
+                  </p>
+                </div>
+                <div class="features-item">
+                  <span class="mega-octicon octicon-mirror"></span>
+                  <h4>Multiple panes</h4>
+                  <p>
+                    Split your Atom interface into multiple panes to compare and
+                    edit code across files.
+                  </p>
+                </div>
+                <div class="features-item">
+                  <span class="mega-octicon octicon-search"></span>
+                  <h4>Find and replace</h4>
+                  <p>
+                    Find, preview, and replace text as you type in a file or
+                    across all your projects.
+                  </p>
+                </div>
+              </div>
+
+              <h3>Make it your editor</h3>
+
+              <div class="features">
+                <div class="features-item">
+                  <span class="mega-octicon octicon-package"></span>
+                  <h4>Packages</h4>
+                  <p>
+                    Choose from thousands of
+                    <a href="packages.html">open source packages</a>
+                    that add new features and functionality to Atom, or build a
+                    package from scratch and publish it for everyone else to
+                    use.
+                  </p>
+                </div>
+                <div class="features-item">
+                  <span class="mega-octicon octicon-paintbrush"></span>
+                  <h4>Themes</h4>
+                  <p>
+                    Atom comes pre-installed with four UI and eight syntax
+                    <a href="themes.html">themes</a>
+                    in both dark and light colors. Can't find what you're
+                    looking for? Install themes created by the Atom community or
+                    create your own.
+                  </p>
+                </div>
+                <div class="features-item">
+                  <span class="mega-octicon octicon-tools"></span>
+                  <h4>Customization</h4>
+                  <p>
+                    It's easy to customize and style Atom. Tweak the look and
+                    feel of your UI with CSS/Less, and add major features with
+                    HTML and JavaScript.
+                  </p>
+                </div>
+                <div class="features-item">
+                  <span class="mega-octicon octicon-code"></span>
+                  <h4>Under the hood</h4>
+                  <p>
+                    Atom is a desktop application built with HTML, JavaScript,
+                    CSS, and Node.js integration. It runs on
+                    <a href="https://electronjs.org/">Electron</a>, a framework
+                    for building cross platform apps using web technologies.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section section--contact">
+            <div class="wrapper no-pad">
+              <div class="columns">
+                <div class="column">
+                  <h3>Open source</h3>
+                  <p>
+                    Atom is open source. Be part of the Atom community or help
+                    improve your favorite text editor.
+                  </p>
+                  <p class="welcome-cta">
+                    <a
+                      href="https://github.com/atomeditor-io/atom"
+                      class="welcome-button"
+                      >Fork on GitHub</a
+                    >
+                  </p>
+                </div>
+
+                <div class="column">
+                  <h3>Keep in touch</h3>
+                  <table class="welcome-contact-table">
+                    <tbody>
+                      <tr>
+                        <td>GitHub</td>
+                        <td>
+                          <a href="https://github.com/atomeditor-io"
+                            >github.com/atomeditor-io</a
+                          >
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Discussion</td>
+                        <td>
+                          <a
+                            href="https://github.com/atomeditor-io/atom/releases"
+                            >Release notes</a
+                          >
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>RSS Feed</td>
+                        <td>
+                          <a href="packages.html">Packages &amp; Themes</a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="footer-pad"></div>
+    </div>
+
+    <footer>
+      <div class="footer">
+        <div class="wrapper no-pad">
+          <ul class="footer-left">
+            <li>
+              <a
+                href="https://docs.github.com/en/github/site-policy/github-open-source-applications-terms-and-conditions"
+                >Terms of Use</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://docs.github.com/en/free-pro-team@latest/github/site-policy/github-privacy-statement"
+                >Privacy</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://github.com/atomeditor-io/atom/blob/master/CODE_OF_CONDUCT.md"
+                >Code of Conduct</a
+              >
+            </li>
+            <li>
+              <a href="https://github.com/atomeditor-io/atom/releases"
+                >Releases</a
+              >
+            </li>
+            <li>
+              <a href="https://github.com/atomeditor-io/atom">FAQ</a>
+            </li>
+            <li>
+              <a href="https://github.com/atomeditor-io/atom/discussions"
+                >Contact</a
+              >
+            </li>
+          </ul>
+
+          <div class="footer-right">
+            <a href="https://github.com/atomeditor-io"
+              ><span class="octicon octicon-code"></span> with
+              <span class="octicon octicon-heart"></span> by
+              <span class="octicon octicon-mark-github"></span
+            ></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div id="lean_overlay"></div>
+    <script>
+      function detectOS() {
+        var ua = navigator.userAgent;
+        var plat =
+          (navigator.userAgentData && navigator.userAgentData.platform) ||
+          navigator.platform ||
+          "";
+        function hit(p) {
+          return ua.indexOf(p) > -1 || plat.indexOf(p) > -1;
+        }
+        if (hit("Mac"))
+          return {
+            platform: "macOS",
+            support: "For macOS 10.10 or later",
+            pick: function (a) {
+              return /\.zip$/.test(a.name.toLowerCase()) && /\bmac\b/.test(a.name.toLowerCase());
+            },
+          };
+        if (hit("Win"))
+          return {
+            platform: "Windows",
+            support: "Windows x64",
+            pick: function (a) {
+              return /\.exe$/.test(a.name.toLowerCase());
+            },
+          };
+        if (hit("Linux") || hit("X11")) {
+          if (/fedora|rhel|centos|opensuse|suse|rocky|alma|amazon/i.test(ua))
+            return {
+              platform: "Fedora/RHEL",
+              support: "x86_64 .rpm",
+              pick: function (a) {
+                return /\.rpm$/.test(a.name.toLowerCase());
+              },
+            };
+          return {
+            platform: "Debian/Ubuntu",
+            support: "amd64 .deb",
+            pick: function (a) {
+              return /\.deb$/.test(a.name.toLowerCase());
+            },
+          };
+        }
+        return {
+          platform: "",
+          support: "",
+          pick: function (a) {
+            return /\.deb$/.test(a.name.toLowerCase());
+          },
+        };
+      }
+
+      var os = detectOS();
+      var platEl = document.getElementById("js-platform");
+      var supEl = document.getElementById("js-support");
+      var dlbtn = document.getElementById("js-download-button");
+      if (os.platform) {
+        platEl.textContent = os.platform;
+        supEl.textContent = os.support;
+      }
+      dlbtn.addEventListener("click", function () {
+        if (dlbtn.href.indexOf("releases/latest") === -1) return;
+      });
+      fetch("https://api.github.com/repos/atomeditor-io/atom/releases/latest")
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (d) {
+          if (!d.tag_name) return;
+          var vm = d.tag_name.match(/e(\d+)/);
+          if (vm)
+            document.querySelector(".version").textContent =
+              "1.63 · e" + vm[1];
+          var asset = (d.assets || []).find(os.pick);
+          if (asset) dv(dlbtn, asset.browser_download_url);
+          else dv(dlbtn, "https://github.com/atomeditor-io/atom/releases/latest");
+        })
+        .catch(function () {});
+      function dv(el, href) {
+        el.setAttribute("href", href);
+        el.setAttribute(
+          "title",
+          (os.platform ? os.platform + " — " : "") + href.split("/").pop(),
+        );
+      }
+    </script>
+  </body>
+</html>
