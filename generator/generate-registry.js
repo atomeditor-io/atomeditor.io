@@ -32,8 +32,29 @@ const EXTRA = (process.env.EXTRA_REPOS || [
 const EXTRA_REPOS = EXTRA.split(',').map(s => s.trim()).filter(Boolean);
 // Infra/meta repos that ship a package.json but are not installable packages.
 const NAME_DENY = /^(atom|atom-community\.github\.io|atom-editor|semantic-release[^/]*|dlvr[^/]*)$|\.github\.io$/i;
+// Build-dep/config/infra noise that shipped a package.json but isn't a real
+// installable Atom package. Hidden from the browse indices (per-package files
+// still resolve so apm can install if someone pinned one).
+const JUNK_NAMES = new Set([
+  'definitely-typed','mathjax','react-tools','electron-quick-start',
+  'jasmine-json','jasmine-node','jasmine-reporters','jasmine-tagged','jasmine-waits-for-callback',
+  'generator-atom-npm','grunt-coffeelint','neon-cli','slackin','spamtoberfest','opencode',
+  'babel-preset-atomic','babel-plugin-add-module-exports','babel-plugin-transform-not-strict',
+  'eslint-config-atomic','prettier-config-atomic','terser-config-atomic','rollup-plugin-atomic',
+  'atomcommunity-pipelines','telemetry-github','debugger-test','organization-sync','atom-bugs',
+  'github-releases','flight-manual.atom.io','atom-slick','space-pencil','squeegpg','town-crier',
+  'television','tello','joanna','roaster','notebook','pr-changelog','spawn-as-admin','whats-my-line',
+  'project-ring','scroll-searcher','scrollbar-style','atom-diff','line-length-index','line-top-index',
+  'nslog','text-transforms','mistaken-pull-closer','reactionary','revert-buffer','require-snapshot',
+  'timecop','loophole','mixto'
+]);
+// Names that keep their original owner URL even if the basename collides with
+// a (non-fork) repo in atomeditor-io (e.g. our `atom` editor vs file-icons/atom).
+const NO_FORK_RENAME = new Set(['atom']);
 const PER_PAGE = 100;
 const OUT_DIR = path.join(__dirname, '..', 'api');
+const ORG_NAME = 'atomeditor-io';
+const OUR_FORKS = new Set(); // basenames of atomeditor-io fork repos (set by main())
 const TOKEN = process.env.GH_TOKEN || '';
 const AUTH = TOKEN ? { headers: { Authorization: `Bearer ${TOKEN}`, 'User-Agent': 'atomeditor-registry' } } : { headers: { 'User-Agent': 'atomeditor-registry' } };
 
@@ -132,13 +153,29 @@ async function buildPackage(meta) {
     /-(ui|syntax|theme)$/i.test(name) ||
     (/theme/i.test(name));
   const version = typeof pkg.version === 'string' ? pkg.version : '0.0.0';
-  const repositoryUrl = (pkg.repository && (pkg.repository.url || pkg.repository)) || `https://github.com/${meta.org}/${meta.name}`;
+  let repositoryUrl = (pkg.repository && (pkg.repository.url || pkg.repository)) || `https://github.com/${meta.org}/${meta.name}`;
+  repositoryUrl = String(repositoryUrl).replace(/^git\+/, '');
+  // If we mirror this repo under atomeditor-io, link there instead of the upstream owner.
+  // Prefer matching by repo basename; fall back to the package name for forks whose
+  // upstream renamed/re-homed the repo (e.g. space-pen -> space-pen-plus, atom-buildium -> buildium).
+  const baseName = path.basename(repositoryUrl).replace(/\.git$/, '');
+  const forkName =
+    OUR_FORKS.has(baseName) && !NO_FORK_RENAME.has(baseName)
+      ? baseName
+      : OUR_FORKS.has(name) && !NO_FORK_RENAME.has(name)
+      ? name
+      : null;
+  const forkBase = forkName !== null;
+  if (forkBase) repositoryUrl = `https://github.com/${ORG_NAME}/${forkName}`;
+  const urlBase = forkBase
+    ? `https://github.com/${ORG_NAME}/${forkName}`
+    : `https://github.com/${meta.org}/${meta.name}`;
 
   const { version: tarballVersion, tarball } = await resolveTarball({ ...meta, version });
   const verKey = tarballVersion || version;
   const engines = (pkg.engines && (pkg.engines.atom || pkg.engines['atom'])) ? { atom: pkg.engines.atom || pkg.engines['atom'] } : null;
   const versionEntry = {
-    url: `https://github.com/${meta.org}/${meta.name}`,
+    url: urlBase,
     tarball_url: tarball,
     dist: { tarball },
     ...(engines ? { engines } : {})
@@ -148,8 +185,8 @@ async function buildPackage(meta) {
     name,
     version: tarballVersion || version,
     description: pkg.description || meta.description || '',
-    website: `https://github.com/${meta.org}/${meta.name}`,
-    repository: { type: 'git', url: String(repositoryUrl).replace(/^git\+/, '') },
+    website: urlBase,
+    repository: { type: 'git', url: repositoryUrl },
     stars: meta.stars,
     downloads: 0,
     stargazers_count: meta.stars,
@@ -158,8 +195,8 @@ async function buildPackage(meta) {
       name,
       version: tarballVersion || version,
       description: pkg.description || meta.description || '',
-      repository: { type: 'git', url: String(repositoryUrl).replace(/^git\+/, '') },
-      website: `https://github.com/${meta.org}/${meta.name}`,
+      repository: { type: 'git', url: repositoryUrl },
+      website: urlBase,
       theme: isTheme,
       ...(engines ? { engines } : {})
     },
@@ -188,6 +225,10 @@ function lightRecord(p) {
 
 async function main() {
   const repos = (await Promise.all(ORGS.map(listOrgRepos))).flat();
+  for (const r of repos) {
+    if (r.org === ORG_NAME && r.fork) OUR_FORKS.add(r.name);
+  }
+  console.error(`our forks: ${OUR_FORKS.size}`);
   const byName = new Map();
   for (const r of repos) {
     const key = r.org + '/' + r.name;
@@ -221,6 +262,10 @@ async function main() {
   const finalPkgs = [...byPkgName.values()];
   finalPkgs.sort((a, b) => b.stars - a.stars);
 
+  const listedPkgs = finalPkgs.filter(p => !JUNK_NAMES.has(p.name));
+  const hidden = finalPkgs.length - listedPkgs.length;
+  console.error(`hidden junk: ${hidden}`);
+
   fs.mkdirSync(path.join(OUT_DIR, 'packages'), { recursive: true });
   fs.mkdirSync(path.join(OUT_DIR, 'themes'), { recursive: true });
 
@@ -228,7 +273,7 @@ async function main() {
     fs.writeFileSync(file, JSON.stringify(data));
   };
 
-  for (const p of finalPkgs) {
+  for (const p of listedPkgs) {
     try {
       // apm requests /api/packages/<name> extensionless; Pages won't map <name>.json
       // to it, so the canonical file is extensionless (a .json twin is a bonus).
@@ -242,23 +287,23 @@ async function main() {
   // once and filter locally (the static site can't answer arbitrary ?q=).
   // /api/packages carries packages AND themes (as atom.io's search did); the
   // /api/themes index stays theme-only for browsing; featured stays split.
-  const themeRecords = finalPkgs.filter(p => p.theme);
+  const themeRecords = listedPkgs.filter(p => p.theme);
   const themeIndex = themeRecords;
 
-  writeJsonHtml(path.join(OUT_DIR, 'packages', 'index.html'), finalPkgs);
+  writeJsonHtml(path.join(OUT_DIR, 'packages', 'index.html'), listedPkgs);
   writeJsonHtml(path.join(OUT_DIR, 'themes', 'index.html'), themeIndex);
   // featured needs FULL pack objects (apm renderer filters on pack.releases.latest)
-  writeJsonHtml(path.join(OUT_DIR, 'packages', 'featured'), finalPkgs.filter(p => !p.theme).slice(0, 60));
+  writeJsonHtml(path.join(OUT_DIR, 'packages', 'featured'), listedPkgs.filter(p => !p.theme).slice(0, 60));
   writeJsonHtml(path.join(OUT_DIR, 'themes', 'featured'), themeRecords.slice(0, 30));
 
   const meta = {
     source: ORGS.map(o => `https://github.com/${o}`),
     generated_at: new Date().toISOString(),
-    counts: { repos: unique.length, packages: finalPkgs.length, themes: themeRecords.length }
+    counts: { repos: unique.length, packages: listedPkgs.length, themes: themeRecords.length }
   };
   writeJsonHtml(path.join(OUT_DIR, '_meta.json'), meta);
 
-  console.log(`registry written to ${OUT_DIR}: ${finalPkgs.length} packages, ${themeRecords.length} themes`);
+  console.log(`registry written to ${OUT_DIR}: ${listedPkgs.length} packages, ${themeRecords.length} themes`);
 }
 
 main().catch(err => {
