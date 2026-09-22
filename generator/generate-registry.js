@@ -131,28 +131,26 @@ async function resolveTarball(meta) {
 }
 
 async function resolveBranch(meta) {
-  for (const branch of ['master', 'main']) {
+  // Trust repo metadata's default branch when present: probing can latch
+  // onto stale legacy branches (forks often keep an old `master` around
+  // after the default moved to `main`, serving outdated package.json).
+  if (meta.branch) return meta.branch;
+  for (const branch of ['main', 'master']) {
     const res = await fetch(`https://raw.githubusercontent.com/${meta.org}/${meta.name}/${branch}/package.json`, AUTH);
     if (res.status === 200) return branch;
   }
-  return meta.branch;
+  return 'master';
 }
 
 async function buildPackage(meta) {
-  if (!meta.branch) meta.branch = await resolveBranch(meta) || 'master';
+  if (!meta.branch) meta.branch = await resolveBranch(meta);
   const rawBase = `https://raw.githubusercontent.com/${meta.org}/${meta.name}/${meta.branch}`;
-  const pkg = await fetchJson(`${rawBase}/package.json`);
+  let pkg = await fetchJson(`${rawBase}/package.json`);
   if (!pkg || typeof pkg !== 'object') return null;
 
   const name = typeof pkg.name === 'string' && pkg.name ? pkg.name : meta.name;
   if (name.startsWith('@') || /\/|\\/.test(name)) return null;
   if (NAME_DENY.test(name)) return null;
-  const keywords = Array.isArray(pkg.keywords) ? pkg.keywords : [];
-  const isTheme =
-    keywords.some(k => /theme/i.test(k)) ||
-    /-(ui|syntax|theme)$/i.test(name) ||
-    (/theme/i.test(name));
-  const version = typeof pkg.version === 'string' ? pkg.version : '0.0.0';
   let repositoryUrl = (pkg.repository && (pkg.repository.url || pkg.repository)) || `https://github.com/${meta.org}/${meta.name}`;
   repositoryUrl = String(repositoryUrl).replace(/^git\+/, '');
   // If we mirror this repo under atomeditor-io, link there instead of the upstream owner.
@@ -171,19 +169,43 @@ async function buildPackage(meta) {
     ? `https://github.com/${ORG_NAME}/${forkName}`
     : `https://github.com/${meta.org}/${meta.name}`;
 
-  const { version: tarballVersion, tarball } = await resolveTarball({ ...meta, version });
-  const verKey = tarballVersion || version;
-  const engines = (pkg.engines && (pkg.engines.atom || pkg.engines['atom'])) ? { atom: pkg.engines.atom || pkg.engines['atom'] } : null;
+  // The fork under our org is the canonical source for a mirrored package:
+  // version, metadata and the installable tarball must come from it, or apm
+  // would install upstream code while linking to our fork. Upstream only
+  // lends its stars for ranking. Graceful fallback: keep upstream values if
+  // the fork has no readable package.json.
+  let sourceMeta = meta;
+  if (forkBase) {
+    const forkMeta = { ...meta, org: ORG_NAME, name: forkName, branch: null };
+    forkMeta.branch = await resolveBranch(forkMeta);
+    const forkPkg = await fetchJson(`https://raw.githubusercontent.com/${ORG_NAME}/${forkName}/${forkMeta.branch}/package.json`);
+    if (forkPkg && typeof forkPkg === 'object' && typeof forkPkg.version === 'string') {
+      pkg = forkPkg;
+      sourceMeta = forkMeta;
+    } else {
+      console.error(`fork ${ORG_NAME}/${forkName} unreadable; keeping ${meta.org}/${meta.name} as source`);
+    }
+  }
+  const forkKeywords = Array.isArray(pkg.keywords) ? pkg.keywords : [];
+  const forkIsTheme =
+    forkKeywords.some(k => /theme/i.test(k)) ||
+    /-(ui|syntax|theme)$/i.test(name) ||
+    (/theme/i.test(name));
+  const forkVersion = typeof pkg.version === 'string' ? pkg.version : '0.0.0';
+  const forkEngines = (pkg.engines && (pkg.engines.atom || pkg.engines['atom'])) ? { atom: pkg.engines.atom || pkg.engines['atom'] } : null;
+
+  const { version: tarballVersion, tarball } = await resolveTarball({ ...sourceMeta, version: forkVersion });
+  const verKey = tarballVersion || forkVersion;
   const versionEntry = {
     url: urlBase,
     tarball_url: tarball,
     dist: { tarball },
-    ...(engines ? { engines } : {})
+    ...(forkEngines ? { engines: forkEngines } : {})
   };
 
   return {
     name,
-    version: tarballVersion || version,
+    version: tarballVersion || forkVersion,
     description: pkg.description || meta.description || '',
     website: urlBase,
     repository: { type: 'git', url: repositoryUrl },
@@ -193,18 +215,18 @@ async function buildPackage(meta) {
     readme: null,
     metadata: {
       name,
-      version: tarballVersion || version,
+      version: tarballVersion || forkVersion,
       description: pkg.description || meta.description || '',
       repository: { type: 'git', url: repositoryUrl },
       website: urlBase,
-      theme: isTheme,
-      ...(engines ? { engines } : {})
+      theme: forkIsTheme,
+      ...(forkEngines ? { engines: forkEngines } : {})
     },
     releases: {
-      latest: { version: tarballVersion || version, tarball_url: tarball, url: `${tarball || ''}` },
-      stable: { version: tarballVersion || version, tarball_url: tarball, url: `${tarball || ''}` }
+      latest: { version: tarballVersion || forkVersion, tarball_url: tarball, url: `${tarball || ''}` },
+      stable: { version: tarballVersion || forkVersion, tarball_url: tarball, url: `${tarball || ''}` }
     },
-    theme: isTheme,
+    theme: forkIsTheme,
     archived: meta.archived,
     versions: {
       [verKey]: versionEntry
