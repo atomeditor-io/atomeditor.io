@@ -12,7 +12,7 @@
 <p>Atom's package manager, <code>apm</code>, was built against one API endpoint: <code>atom.io/api</code>. When the site was sunset, those calls stopped answering — <code>apm install minimap</code> became a 301 to a blog post about the archive. Community packages and themes showed up empty in the install views.</p>
 <p>The fix isn't another hosted service. It's a <b>static registry generated from GitHub repositories</b>.</p>
 <h2>How it works</h2>
-<p>The registry lives at <code>atomeditor.io/api</code> as plain JSON files, regenerated from a catalog of GitHub orgs — <a href="https://github.com/atomeditor-io">atomeditor-io</a>, <a href="https://github.com/tmiland-lab">tmiland-lab</a> and <a href="https://github.com/atom-community">atom-community</a> — plus a curated set of upstream repos:</p>
+<p>The registry lives at <code>atomeditor.io/api</code> as plain JSON files, regenerated from a catalog of GitHub orgs — <a href="https://github.com/atomeditor-io">atomeditor-io</a> and <a href="https://github.com/atom-community">atom-community</a> — plus a curated set of upstream repos:</p>
 <ul>
 <li><b>Browse/search</b> — the full package list comes down as one JSON index (<code>/api/packages</code>, <code>/api/themes</code>), and Atom's install views filter that index locally (fuzzaldrin) instead of asking a backend. Wiring the same local search into the <code>apm</code> CLI is still pending.</li>
 <li><b>Fork-aware</b> — for every mirrored package the registry serves <b>our fork's</b> versions and <code>dist.tarball</code>, so an install pulls the maintained code rather than a stale upstream tag.</li>

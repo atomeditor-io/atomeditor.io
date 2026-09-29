@@ -17,7 +17,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ORGS = (process.env.REGISTRY_ORGS || 'atomeditor-io,tmiland-lab,atom-community').split(',').map(s => s.trim()).filter(Boolean);
+const ORGS = (process.env.REGISTRY_ORGS || 'atomeditor-io,atom-community').split(',').map(s => s.trim()).filter(Boolean);
 const EXTRA = (process.env.EXTRA_REPOS || [
   'atom-minimap/minimap',
   'file-icons/atom',
@@ -288,6 +288,10 @@ async function main() {
   const hidden = finalPkgs.length - listedPkgs.length;
   console.error(`hidden junk: ${hidden}`);
 
+  // Wipe previously generated entries so packages whose source repo was
+  // removed (or dropped from ORGS) don't linger as stale files.
+  fs.rmSync(path.join(OUT_DIR, 'packages'), { recursive: true, force: true });
+  fs.rmSync(path.join(OUT_DIR, 'themes'), { recursive: true, force: true });
   fs.mkdirSync(path.join(OUT_DIR, 'packages'), { recursive: true });
   fs.mkdirSync(path.join(OUT_DIR, 'themes'), { recursive: true });
 

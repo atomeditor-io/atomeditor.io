@@ -2,7 +2,7 @@
 
 Static site for the Atom Editor revival, hosted on GitHub Pages.
 
-- **Homepage** — `index.html`, reuse of the atom.tmiland.com atom.io-design homage.
+- **Homepage** — `index.html`, an atom.io-design homage.
 - **Blog** — `blog/`, static posts under their own section of the main page.
 - **Registry** — `api/`, a static, atom.io-compatible package registry for `apm`.
   - `GET /api/packages`        — full package index (JSON)
@@ -11,8 +11,8 @@ Static site for the Atom Editor revival, hosted on GitHub Pages.
   - `GET /api/themes`, `GET /api/themes/featured`
   - `.html` files contain raw JSON; apm parses bodies, content-type is irrelevant.
 - **Generator** — `generator/generate-registry.js` (Node ≥ 18, zero deps) pulls the
-  `atom-community` catalog, resolves each repo's `package.json` (branch + tag tarballs
-  via GitHub codeload), and rewrites `api/`.
+  `atomeditor-io` + `atom-community` catalogs, resolves each repo's `package.json`
+  (branch + tag tarballs via GitHub codeload), and rewrites `api/`.
 
 ## Regenerate
 
