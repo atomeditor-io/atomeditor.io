@@ -8,18 +8,19 @@
 <div class="wrap">
 <article>
 <h1>The ecosystem registry — apm without atom.io</h1>
-<p class="meta">2026-09-13 · Part 3 of the chase log</p>
+<p class="meta">2026-09-13 · updated 2026-09-29 · Part 3 of the chase log</p>
 <p>Atom's package manager, <code>apm</code>, was built against one API endpoint: <code>atom.io/api</code>. When the site was sunset, those calls stopped answering — <code>apm install minimap</code> became a 301 to a blog post about the archive. Community packages and themes showed up empty in the install views.</p>
 <p>The fix isn't another hosted service. It's a <b>static registry generated from GitHub repositories</b>.</p>
 <h2>How it works</h2>
-<p>The registry lives at <code>atomeditor.io/api</code> as plain JSON files, regenerated on a schedule from the <a href="https://github.com/atom-community">atom-community</a> catalog:</p>
+<p>The registry lives at <code>atomeditor.io/api</code> as plain JSON files, regenerated from a catalog of GitHub orgs — <a href="https://github.com/atomeditor-io">atomeditor-io</a>, <a href="https://github.com/tmiland-lab">tmiland-lab</a> and <a href="https://github.com/atom-community">atom-community</a> — plus a curated set of upstream repos:</p>
 <ul>
-<li><b>Browse/search</b> — the full package list comes down as one JSON index (<code>/api/packages</code>, <code>/api/themes</code>), and <code>apm search</code> filters it locally instead of asking a backend.</li>
+<li><b>Browse/search</b> — the full package list comes down as one JSON index (<code>/api/packages</code>, <code>/api/themes</code>), and Atom's install views filter that index locally (fuzzaldrin) instead of asking a backend. Wiring the same local search into the <code>apm</code> CLI is still pending.</li>
+<li><b>Fork-aware</b> — for every mirrored package the registry serves <b>our fork's</b> versions and <code>dist.tarball</code>, so an install pulls the maintained code rather than a stale upstream tag.</li>
 <li><b>Details</b> — <code>/api/packages/minimap</code> returns full metadata exactly where <code>apm view</code> and <code>apm install</code> expect it.</li>
 <li><b>Features</b> — <code>/api/packages/featured</code> and <code>/api/themes/featured</code> mirror the old landing rows.</li>
 <li><b>Tarballs</b> — the <code>dist.tarball</code> for every version points straight at GitHub's codeload, so an install is a plain download from the repo itself: no proxy, no gatekeeper.</li>
 </ul>
-<p>Because the whole thing is generated files in a GitHub-hosted site, it can't die like atom.io did — and it regenerates automatically from the repo catalog each week.</p>
+<p>Because the whole thing is generated files in a GitHub-hosted site, it can't die like atom.io did — and it regenerates on every push to the site repo and weekly.</p>
 <h2>Native modules stay sane</h2>
 <p>The one thing a tarball can't guarantee is a working compile. Community packages with native addons get routed through the fork-chain rule: universal pre-N-API source, built against the Electron headers for whatever rung you're on. Everything compiles from source on CI — no stale prebuilt cache.</p>
 <p>Compatibility with Pulsar's forward-ported packages is being used as a reference oracle: where a package has already been migrated, we adopt the port rather than reinventing it.</p>

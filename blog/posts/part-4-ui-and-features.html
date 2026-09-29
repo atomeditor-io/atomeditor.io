@@ -8,15 +8,15 @@
 <div class="wrap">
 <article>
 <h1>UI &amp; feature refresh — keep the soul, modernize the chrome</h1>
-<p class="meta">2026-09-13 · Part 4 of the chase log</p>
+<p class="meta">2026-09-13 · updated 2026-09-29 · Part 4 of the chase log</p>
 <p>The core editor climbs Electron fine now. The next stretch is the surface: which bundled packages actually crash on modern Chromium, which ones deserve a deliberate bump, and how the interface should feel in 2026.</p>
 <h2>Debug first</h2>
-<p>An audit of the 90+ bundled packages ranks the real user-visible breakages:</p>
+<p>An audit of the 90+ bundled packages ranks the real user-visible breakages. Two of the biggest are now fixed and shipping:</p>
 <ol>
-<li><b>github</b> — the renderer 404s when its web worker loads over <code>file://</code> under modern Chromium; candidate fix is a custom protocol / <code>allowFileAccess</code>.</li>
-<li><b>tree-sitter</b> — null-node type errors on some files; grammars get non-fatal fallback to the tokenizer, then per-grammar fixes.</li>
-<li><b>autocomplete-*</b> — legacy <code>requestAnimationFrame</code> / TextBuffer API drift.</li>
-<li><b>spell-check</b> — hunspell path and dictionary fetching.</li>
+<li><b>github</b> — <b>fixed</b>. Its web worker needed <code>sandbox: false</code> under Electron 20+, the package's ESM sources are transpiled to CommonJS at build time, and our github fork swaps the removed <code>electron.remote</code> for <code>@electron/remote</code>.</li>
+<li><b>tree-sitter</b> — <b>fixed</b>. A rebuffer-alias bug in our node-tree-sitter fork detached the native transfer buffer (collapsing highlighting to the root scope); the alias is restored, plus null-rootNode guards for the transient post-edit window. Verified on real hardware, not just CI.</li>
+<li><b>autocomplete-*</b> — remaining: legacy <code>requestAnimationFrame</code> / TextBuffer API drift.</li>
+<li><b>spell-check</b> — remaining: hunspell path and dictionary fetching.</li>
 </ol>
 <h2>Update deliberately, not wholesale</h2>
 <p>Bumping every pin at once invites API churn across core. The rule is <b>one package per release rung</b>, gated by the test-install + smoke gate, security fixes first, and commit-pinned dependencies kept reproducible — never floating branches.</p>

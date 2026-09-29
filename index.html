@@ -144,7 +144,7 @@
                   <li>
                     <span class="platform" id="js-platform">macOS</span>
                     <span class="support" id="js-support"
-                      >For macOS 10.9 or later</span
+                      >For macOS 12 (Monterey) or later</span>
                     >
                   </li>
                   <li>
@@ -534,7 +534,7 @@
         if (hit("Mac"))
           return {
             platform: "macOS",
-            support: "For macOS 10.10 or later",
+            support: "For macOS 12 (Monterey) or later",
             pick: function (a) {
               return /\.zip$/.test(a.name.toLowerCase()) && /\bmac\b/.test(a.name.toLowerCase());
             },
@@ -542,7 +542,7 @@
         if (hit("Win"))
           return {
             platform: "Windows",
-            support: "Windows x64",
+            support: "Windows 10 or later · x64",
             pick: function (a) {
               return /\.exe$/.test(a.name.toLowerCase());
             },

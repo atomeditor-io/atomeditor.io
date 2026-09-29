@@ -8,15 +8,15 @@
 <div class="wrap">
 <article>
 <h1>The revival — Atom 1.63.1 on modern Electron</h1>
-<p class="meta">2026-09-13 · Part 1 of the chase log</p>
+<p class="meta">2026-09-13 · updated 2026-09-29 · Part 1 of the chase log</p>
 <p>GitHub archived Atom in 2022. The last release sat frozen on an Electron-era runtime that every modern OS had quietly left behind — newer systems rolled past its sign-up screens and its bundled Chromium. The editor was never dead; it was stuck.</p>
 <p>The revival takes the final upstream codebase, Atom 1.63.1, and climbs it up the Electron ladder, rung by rung.</p>
 <h2>The chase ladder</h2>
 <p>Each rung is a full jump to a newer Electron — the renderer, the native modules (<code>superstring</code>, <code>watcher</code>, <code>nsfw</code>, tree-sitter), and the packaged installers all have to move together. Every rung is CI-built on the three desktop platforms and gated by a real smoke test, not just a compile.</p>
 <ul>
 <li><b>Baselined</b> on a modern Debian at Electron 11.</li>
-<li><b>Climbed</b> Electronics 13 → 37 across the <a href="https://github.com/atomeditor-io/atom/issues/1">chase-log issue</a>, each jump its own tagged release.</li>
-<li><b>Now shipping</b> Atom 1.63.1 on Electron 37 — upstream Chromium, upstream Node, on the same editor.</li>
+<li><b>Climbed</b> Electron 13 → 39 across the <a href="https://github.com/atomeditor-io/atom/issues/1">chase-log issue</a>, each jump its own tagged release.</li>
+<li><b>Now shipping</b> Atom 1.63.1 on Electron 39 — Chromium 142 and Node 22 under the same editor. Latest tag: <b>v1.63.1-e39.8</b>.</li>
 </ul>
 <p>Along the way the original's two biggest missing pieces got addressed:</p>
 <ul>
