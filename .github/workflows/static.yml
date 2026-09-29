@@ -38,8 +38,8 @@ jobs:
         run: node generator/generate-registry.js
       - name: Commit regenerated api/
         run: |
-          git config user.name "atomeditor-bot"
-          git config user.email "actions@users.noreply.github.com"
+          git config user.name "atomeditor-io[bot]"
+          git config user.email "329224475+atomeditor-io[bot]@users.noreply.github.com"
           git add api
           git diff --cached --quiet || git commit -m "chore(api): regenerate package registry [skip ci]"
           git push
