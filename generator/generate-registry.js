@@ -105,6 +105,35 @@ async function fetchJson(url) {
   }
 }
 
+async function fetchReadme(meta) {
+  // Per-package records carry the README so settings-view can render it for a
+  // package that is not installed yet (installed packages fall back to the
+  // file on disk). The registry previously shipped `readme: null`, which left
+  // the detail view showing "NO README" for every uninstalled package.
+  const base = `https://raw.githubusercontent.com/${meta.org}/${meta.name}/${meta.branch}`;
+  const candidates = [
+    'README.md',
+    'readme.md',
+    'Readme.md',
+    'README.markdown',
+    'README.mdown',
+    'README.rst',
+    'README.txt'
+  ];
+  for (const file of candidates) {
+    try {
+      const res = await fetch(`${base}/${file}`, AUTH);
+      if (res.status === 200) {
+        const text = await res.text();
+        if (text && text.trim()) return text;
+      }
+    } catch (e) {
+      // try the next candidate
+    }
+  }
+  return null;
+}
+
 async function headStatus(url) {
   try {
     const res = await fetch(url, { method: 'HEAD', redirect: 'follow', ...AUTH });
@@ -203,6 +232,8 @@ async function buildPackage(meta) {
     ...(forkEngines ? { engines: forkEngines } : {})
   };
 
+  const readme = await fetchReadme(sourceMeta);
+
   return {
     name,
     version: tarballVersion || forkVersion,
@@ -212,7 +243,7 @@ async function buildPackage(meta) {
     stars: meta.stars,
     downloads: 0,
     stargazers_count: meta.stars,
-    readme: null,
+    readme,
     metadata: {
       name,
       version: tarballVersion || forkVersion,
@@ -299,6 +330,15 @@ async function main() {
     fs.writeFileSync(file, JSON.stringify(data));
   };
 
+  // Keep READMEs out of the multi-package indices: they belong only to the
+  // per-package records that settings-view fetches for the detail view, and
+  // embedding them in the (locally-cached) browse index would bloat it.
+  const withoutReadme = p => {
+    const copy = { ...p };
+    delete copy.readme;
+    return copy;
+  };
+
   for (const p of listedPkgs) {
     try {
       // apm requests /api/packages/<name> extensionless; Pages won't map <name>.json
@@ -316,11 +356,11 @@ async function main() {
   const themeRecords = listedPkgs.filter(p => p.theme);
   const themeIndex = themeRecords;
 
-  writeJsonHtml(path.join(OUT_DIR, 'packages', 'index.html'), listedPkgs);
-  writeJsonHtml(path.join(OUT_DIR, 'themes', 'index.html'), themeIndex);
+  writeJsonHtml(path.join(OUT_DIR, 'packages', 'index.html'), listedPkgs.map(withoutReadme));
+  writeJsonHtml(path.join(OUT_DIR, 'themes', 'index.html'), themeIndex.map(withoutReadme));
   // featured needs FULL pack objects (apm renderer filters on pack.releases.latest)
-  writeJsonHtml(path.join(OUT_DIR, 'packages', 'featured'), listedPkgs.filter(p => !p.theme).slice(0, 60));
-  writeJsonHtml(path.join(OUT_DIR, 'themes', 'featured'), themeRecords.slice(0, 30));
+  writeJsonHtml(path.join(OUT_DIR, 'packages', 'featured'), listedPkgs.filter(p => !p.theme).slice(0, 60).map(withoutReadme));
+  writeJsonHtml(path.join(OUT_DIR, 'themes', 'featured'), themeRecords.slice(0, 30).map(withoutReadme));
 
   const meta = {
     source: ORGS.map(o => `https://github.com/${o}`),
