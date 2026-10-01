@@ -315,6 +315,25 @@
         });
       }
 
+      // Launch atom: links from a hidden iframe. Letting the link navigate
+      // directly makes Firefox leave a blank tab behind for a protocol it
+      // cannot load itself.
+      document.addEventListener("click", function (event) {
+        const link =
+          event.target && event.target.closest
+            ? event.target.closest('a[href^="atom://"]')
+            : null;
+        if (!link) return;
+        event.preventDefault();
+        const frame = document.createElement("iframe");
+        frame.style.display = "none";
+        frame.src = link.getAttribute("href");
+        document.body.appendChild(frame);
+        setTimeout(function () {
+          frame.remove();
+        }, 1500);
+      });
+
       registry.init();
     </script>
   </body>
